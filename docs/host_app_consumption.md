@@ -37,7 +37,7 @@ Use when Pavê is consumed from Git during internal development:
 
 ```ruby
 # Gemfile
-git "git@github.com:pave-rb/pave.git", tag: "v0.1.0.alpha.1" do
+git "git@github.com:pave-rb/pave.git", tag: "v0.1.0.alpha.2" do
   gem "pave",            glob: "gems/pave/*.gemspec"
   gem "pave-core",       glob: "gems/pave-core/*.gemspec"
   gem "pave-rails",      glob: "gems/pave-rails/*.gemspec"

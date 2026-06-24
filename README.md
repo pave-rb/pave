@@ -6,11 +6,11 @@ It extends Ruby on Rails with reusable business modules, first-class products, a
 
 ## Status
 
-Early internal runtime extraction. APIs, install flow, and packaging are unstable. Do not use in production.
+**Early alpha.** APIs, install flow, and packaging are unstable and may change without warning. Pavê is currently validated by the Anella product package. Do not use in production.
+
+Pavê is not yet published to RubyGems. Consume it from a local path or a pinned Git tag during internal development.
 
 ## Current Internal Consumption
-
-Pavê is not yet published to RubyGems. Consume it from a local path or a Git tag during internal development.
 
 ### Local path development
 
@@ -28,7 +28,7 @@ gem "pave-backoffice", path: "../pave/gems/pave-backoffice"
 ### Git tag consumption (internal)
 
 ```ruby
-git "git@github.com:pave-rb/pave.git", tag: "v0.1.0.alpha.1" do
+git "git@github.com:pave-rb/pave.git", tag: "v0.1.0.alpha.2" do
   gem "pave",            glob: "gems/pave/*.gemspec"
   gem "pave-core",       glob: "gems/pave-core/*.gemspec"
   gem "pave-rails",      glob: "gems/pave-rails/*.gemspec"
@@ -40,7 +40,7 @@ git "git@github.com:pave-rb/pave.git", tag: "v0.1.0.alpha.1" do
 end
 ```
 
-Do not consume `branch: "main"` in production host apps. Use an explicit tag or a released gem version.
+Do not consume `branch: "main"` in production host apps. Use an explicit pinned tag or a released gem version.
 
 ## Planned Public Installation
 
