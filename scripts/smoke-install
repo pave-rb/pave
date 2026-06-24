@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+echo "Smoke install is a planned surface."
+echo "Future behavior:"
+echo "  1. Create a temp Rails app"
+echo "  2. Add Pav\u00ea gems via local path"
+echo "  3. Run pave:install generator"
+echo "  4. Run migrations and a health check"

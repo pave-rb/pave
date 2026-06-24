@@ -1,0 +1,13 @@
+booking_received:
+  user: manager
+  title: "New appointment request"
+  body: "John requested an appointment on Feb 28 at 10:00"
+  event_type: appointment_booked
+  notifiable: one (Appointment)
+
+older_booking:
+  user: manager
+  title: "Appointment confirmed"
+  body: "Your appointment has been confirmed"
+  event_type: appointment_confirmed
+  notifiable: one (Appointment)

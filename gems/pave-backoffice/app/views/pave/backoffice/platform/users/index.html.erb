@@ -1,0 +1,65 @@
+<%= content_for :title, "Platform Users" %>
+
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-white">Platform Users</h1>
+    <p class="mt-1 text-sm text-slate-400">Runtime identity users and platform super-admin access.</p>
+  </div>
+
+  <%= turbo_frame_tag "backoffice_users_index" do %>
+    <%= render layout: "pave/backoffice/components/filter_bar",
+          locals: { url: pave_backoffice.users_path, clear_url: pave_backoffice.users_path, turbo_frame: "backoffice_users_index", chips: backoffice_filter_chips } do %>
+      <div>
+        <%= label_tag :q, "Search", class: "mb-1 block text-xs font-medium text-slate-400" %>
+        <%= text_field_tag :q, params[:q], placeholder: "Name or email…", class: backoffice_filter_input_class %>
+      </div>
+
+      <div>
+        <%= label_tag :platform_access, "Platform access", class: "mb-1 block text-xs font-medium text-slate-400" %>
+        <%= select_tag :platform_access,
+              options_for_select([["All", ""], ["Super admin only", "1"]], params[:platform_access]),
+              class: backoffice_filter_select_class %>
+      </div>
+
+      <div>
+        <%= label_tag :status, "Status", class: "mb-1 block text-xs font-medium text-slate-400" %>
+        <%= select_tag :status,
+              options_for_select([["All", ""], ["Confirmed", "confirmed"], ["Unconfirmed", "unconfirmed"]], params[:status]),
+              class: backoffice_filter_select_class %>
+      </div>
+    <% end %>
+
+    <%= render "pave/backoffice/components/data_table",
+          records: @users,
+          empty_message: "No users found.",
+          columns: [
+          backoffice_table_column(:name) { |user| link_to(user.name.presence || "—", pave_backoffice.user_path(user), class: "text-electric hover:underline") },
+          backoffice_table_column(:email),
+          backoffice_table_column(:role) { |user| user.role.presence || "—" },
+          backoffice_table_column(:platform_access, header: "Platform access") do |user|
+            if user.super_admin?
+              tag.span("Super admin", class: "inline-flex items-center rounded-full bg-amber-900/60 px-2 py-0.5 text-xs font-medium text-amber-300")
+            else
+              tag.span("—", class: "text-slate-500")
+            end
+          end,
+          backoffice_table_column(:memberships) do |user|
+            if user.space_membership
+              tag.span("1 space", class: "inline-flex items-center rounded-full bg-slate-700 px-2 py-0.5 text-xs font-medium text-slate-300")
+            else
+              tag.span("—", class: "text-slate-500")
+            end
+          end,
+          backoffice_table_column(:status) do |user|
+            if user.confirmed_at.present?
+              tag.span("Confirmed", class: "inline-flex items-center rounded-full bg-emerald-900/60 px-2 py-0.5 text-xs font-medium text-emerald-300")
+            else
+              tag.span("Unconfirmed", class: "inline-flex items-center rounded-full bg-slate-700 px-2 py-0.5 text-xs font-medium text-slate-400")
+            end
+          end,
+          backoffice_table_column(:created, header: "Created") { |user| l(user.created_at.to_date, format: :default) rescue user.created_at.to_fs(:db) }
+        ] %>
+
+    <%= render "pave/backoffice/components/pagination", collection: @users %>
+  <% end %>
+</div>

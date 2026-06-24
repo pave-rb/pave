@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+echo "Release script is a planned surface."
+echo "Future behavior:"
+echo "  1. Bump lockstep version in lib/pave/version.rb"
+echo "  2. Update CHANGELOG.md"
+echo "  3. Run scripts/build-gems"
+echo "  4. Tag git release"
+echo "  5. Push gems to internal registry (not RubyGems during cleanup)"

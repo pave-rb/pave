@@ -1,0 +1,46 @@
+<header>
+  <p>Product context</p>
+  <h1><%= @panel.label %></h1>
+  <p><%= @panel.description.presence || "This product panel is registered and ready for product-owned content." %></p>
+</header>
+
+<section>
+  <h2>Panel overview</h2>
+  <p>No tenant space is active in backoffice.</p>
+  <dl>
+    <dt>Product</dt>
+    <dd><%= @product.label %> (<%= @product.key %>)</dd>
+
+    <dt>Slug</dt>
+    <dd><%= @panel.slug %></dd>
+
+    <dt>Source</dt>
+    <dd><%= @panel.source.presence || "product" %></dd>
+
+    <dt>Source package</dt>
+    <dd><%= @panel.source_package.presence || "Not declared" %></dd>
+
+    <dt>Position</dt>
+    <dd><%= @panel.position %></dd>
+  </dl>
+</section>
+
+<section>
+  <h2>Primary resources</h2>
+  <p>Product-owned controllers can replace this overview by declaring a panel controller or route block.</p>
+</section>
+
+<section>
+  <h2>Configuration health</h2>
+  <p><%= @panel.status.presence || "No panel health status has been declared." %></p>
+</section>
+
+<section>
+  <h2>Recent activity</h2>
+  <p>Activity appears here when product panel actions write backoffice audit events.</p>
+</section>
+
+<section>
+  <h2>Panel-specific actions</h2>
+  <p>No panel actions are available from the generic overview.</p>
+</section>

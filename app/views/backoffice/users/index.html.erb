@@ -1,0 +1,71 @@
+<div class="space-y-4">
+  <% page_actions = capture do %>
+    <%= link_to t("backoffice.users.index.new_button"), new_backoffice_user_path(space_id: params[:space_id].presence), class: button_classes(:primary) %>
+    <%= link_to t("backoffice.users.index.all_spaces"), backoffice_spaces_path, class: button_classes(:secondary) %>
+  <% end %>
+  <%= render "shared/page_header", title: t("backoffice.users.index.title"), actions: page_actions %>
+
+  <% if @space_filter %>
+    <p class="text-sm text-slate-600">
+      <%= t("backoffice.users.index.filtered_by_space", space: @space_filter.name) %>
+    </p>
+  <% end %>
+
+  <% if @users.any? %>
+    <div class="card-glass overflow-hidden p-0">
+      <table class="min-w-full divide-y divide-slate-200 text-sm">
+        <thead class="bg-slate-50">
+          <tr>
+            <th scope="col" class="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <%= t("backoffice.users.index.table.email") %>
+            </th>
+            <th scope="col" class="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <%= t("backoffice.users.index.table.name") %>
+            </th>
+            <th scope="col" class="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <%= t("backoffice.users.index.table.role") %>
+            </th>
+            <th scope="col" class="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <%= t("backoffice.users.index.table.space") %>
+            </th>
+            <th scope="col" class="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <%= t("backoffice.users.index.table.actions") %>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200">
+          <% @users.each do |user| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2 align-top text-slate-900"><%= user.email %></td>
+              <td class="px-4 py-2 align-top text-slate-700"><%= user.name.presence || "—" %></td>
+              <td class="px-4 py-2 align-top text-slate-700"><%= user.role.presence || "—" %><% if user.super_admin? %> • <%= t("activerecord.attributes.user.system_role.super_admin") %><% end %></td>
+              <td class="px-4 py-2 align-top text-slate-700">
+                  <% if user.space %>
+                    <%= link_to user.space.name, backoffice_space_path(user.space), class: "text-slate-900 hover:underline" %>
+                  <% else %>
+                    —
+                  <% end %>
+                </td>
+              <td class="px-4 py-2 align-top">
+                <div class="flex flex-wrap justify-end gap-1">
+                  <% unless user.super_admin? %>
+                    <%= button_to t("backoffice.users.index.impersonate"),
+                                  impersonate_backoffice_user_path(user),
+                                  method: :post,
+                                  class: button_classes(:table_link) %>
+                  <% end %>
+                  <%= link_to t("backoffice.users.index.view"), backoffice_user_path(user, space_id: params[:space_id].presence), class: button_classes(:table_link) %>
+                  <%= link_to t("backoffice.users.index.edit"), edit_backoffice_user_path(user, space_id: params[:space_id].presence), class: button_classes(:table_link) %>
+                  <%= button_to t("backoffice.users.index.delete"), backoffice_user_path(user), method: :delete, params: { space_id: params[:space_id].presence }, data: { turbo_confirm: t("backoffice.users.index.delete_confirm"), turbo_submits_with: t("shared.deleting") }, class: button_classes(:danger) %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <%= paginate @users, params: { space_id: params[:space_id] } %>
+  <% else %>
+    <%= render "shared/empty_state", content: t("backoffice.users.index.empty") %>
+  <% end %>
+</div>

@@ -1,0 +1,3 @@
+name: <%= class_name %>
+type: product
+pave_version: ">= 0.1.0"

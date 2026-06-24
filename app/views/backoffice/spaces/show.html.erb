@@ -1,0 +1,87 @@
+<div class="space-y-4">
+  <header class="flex items-center justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight text-slate-900">
+        <%= t("backoffice.spaces.show.title") %>
+      </h1>
+      <p class="mt-1 text-xs text-slate-600">
+        <%= t("backoffice.spaces.show.subtitle") %>
+      </p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <%= link_to t("backoffice.spaces.show.edit"),
+                  edit_backoffice_space_path(@space),
+                  class: button_classes(:primary) %>
+      <%= link_to t("backoffice.spaces.show.add_user"),
+                  new_backoffice_user_path(space_id: @space.id),
+                  class: button_classes(:secondary) %>
+      <%= link_to t("backoffice.spaces.show.manage_users"),
+                  backoffice_users_path(space_id: @space.id),
+                  class: button_classes(:secondary) %>
+      <%= link_to t("backoffice.spaces.show.back"),
+                  backoffice_spaces_path,
+                  class: button_classes(:secondary) %>
+    </div>
+  </header>
+
+  <div class="panel-card-compact">
+    <dl class="detail-list">
+      <div class="detail-list__row">
+        <dt class="detail-list__term"><%= t("backoffice.spaces.show.name") %></dt>
+        <dd class="detail-list__value"><%= @space.name %></dd>
+      </div>
+      <div class="detail-list__row">
+        <dt class="detail-list__term"><%= t("backoffice.spaces.show.timezone") %></dt>
+        <dd class="detail-list__value"><%= @space.timezone.presence || "—" %></dd>
+      </div>
+      <div class="detail-list__row">
+        <dt class="detail-list__term"><%= t("backoffice.spaces.show.customers_count") %></dt>
+        <dd class="detail-list__value">
+          <%= link_to @space.customers.count, backoffice_space_customers_path(@space), class: "text-slate-900 hover:underline" %>
+        </dd>
+      </div>
+      <div class="detail-list__row">
+        <dt class="detail-list__term"><%= t("backoffice.spaces.show.team_size") %></dt>
+        <dd class="detail-list__value"><%= @space.users.count %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <%# Subscription summary %>
+  <% sub = @space.subscription %>
+  <div class="panel-card-compact">
+    <div class="flex items-center justify-between">
+      <h2 class="text-sm font-semibold text-slate-800"><%= t("backoffice.spaces.show.subscription.title") %></h2>
+      <%= link_to t("backoffice.spaces.show.subscription.manage"), edit_backoffice_space_subscription_override_path(@space),
+                  class: "text-xs font-medium text-slate-700 hover:underline" %>
+    </div>
+    <% if sub %>
+      <dl class="mt-2 grid gap-2 text-sm sm:grid-cols-3">
+        <div>
+          <dt class="text-xs text-slate-500"><%= t("backoffice.spaces.show.subscription.plan") %></dt>
+          <dd class="font-medium text-slate-900"><%= sub.plan_id.capitalize %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500"><%= t("backoffice.spaces.show.subscription.status") %></dt>
+          <dd>
+            <%= render "shared/status_badge",
+                       status: sub.status,
+                       label:  sub.status.humanize %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500"><%= t("backoffice.spaces.show.subscription.trial_ends") %></dt>
+          <dd class="font-medium text-slate-900"><%= sub.trial_ends_at ? l(sub.trial_ends_at.to_date, format: :short) : "—" %></dd>
+        </div>
+      </dl>
+    <% else %>
+      <p class="mt-2 text-sm text-slate-500"><%= t("backoffice.spaces.show.subscription.none") %></p>
+    <% end %>
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <%= link_to t("backoffice.spaces.show.view_appointments"), backoffice_space_appointments_path(@space), class: button_classes(:secondary) %>
+    <%= link_to t("backoffice.spaces.show.view_customers"), backoffice_space_customers_path(@space), class: button_classes(:secondary) %>
+    <%= link_to t("backoffice.spaces.show.view_scheduling_links"), backoffice_space_scheduling_links_path(@space), class: button_classes(:secondary) %>
+  </div>
+</div>

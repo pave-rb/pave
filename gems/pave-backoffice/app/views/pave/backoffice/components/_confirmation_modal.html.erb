@@ -1,0 +1,84 @@
+<% id = local_assigns.fetch(:id, "backoffice_confirmation_modal") %>
+<% title = local_assigns.fetch(:title, "Confirm action") %>
+<% impact = local_assigns.fetch(:impact, "This action will make a change that cannot be undone automatically.") %>
+<% affected = local_assigns.fetch(:affected, "One or more records") %>
+<% audit_statement = local_assigns.fetch(:audit_statement, "This action will write a backoffice audit event with your admin identity.") %>
+<% confirm_text = local_assigns[:confirm_text] %>
+<% confirm_button_text = local_assigns.fetch(:confirm_button_text, "Confirm") %>
+<% cancel_button_text = local_assigns.fetch(:cancel_button_text, "Cancel") %>
+<% reason_required = local_assigns.fetch(:reason_required, false) %>
+<% confirmation_input = local_assigns.fetch(:confirmation_input, false) %>
+<% confirmation_value = local_assigns.fetch(:confirmation_value, "confirm") %>
+<% form_options = local_assigns.fetch(:form_options, {}) %>
+<% data = local_assigns.fetch(:data, {}).merge(backoffice_confirmation_modal: true) %>
+
+<div class="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="<%= id %>-title"
+     data-controller="pave--backoffice--modal"
+     <% data.each do |key, value| %> data-<%= key.to_s.dasherize %>="<%= value %>"<% end %>>
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" aria-hidden="true" data-action="click->pave--backoffice--modal#close"></div>
+
+  <div class="relative z-10 w-full max-w-lg rounded-lg border border-slate-700 bg-slate-900 p-6 shadow-2xl"
+       data-pave--backoffice--modal-target="panel">
+    <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-950/60">
+      <svg class="h-6 w-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+    </div>
+
+    <h2 id="<%= id %>-title" class="text-center text-lg font-semibold text-white"><%= title %></h2>
+
+    <div class="mt-4 space-y-3 text-sm text-slate-300">
+      <p><%= impact %></p>
+
+      <div class="rounded-md border border-slate-700 bg-slate-800/60 px-3 py-2">
+        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Affected</p>
+        <p class="mt-1 font-medium text-white"><%= affected %></p>
+      </div>
+
+      <p class="text-xs text-slate-400"><%= audit_statement %></p>
+    </div>
+
+    <%= form_with **form_options, html: { class: "mt-6 space-y-4", data: { "pave--backoffice--modal_target" => "form" } } do |form| %>
+      <% if reason_required %>
+        <div>
+          <%= label_tag "#{id}_reason", "Reason for this action", class: "block text-sm font-medium text-white" %>
+          <%= text_area_tag "#{id}[reason]", nil,
+                id: "#{id}_reason",
+                required: true,
+                data: { "pave--backoffice--modal_target" => "reason" },
+                class: "mt-1 w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-electric focus:outline-none focus:ring-1 focus:ring-electric" %>
+        </div>
+      <% end %>
+
+      <% if confirmation_input %>
+        <div>
+          <%= label_tag "#{id}_confirmation", "Type <code class='font-mono text-amber-300'>#{confirmation_value}</code> to confirm".html_safe, class: "block text-sm font-medium text-white" %>
+          <%= text_field_tag "#{id}[confirmation]", nil,
+                id: "#{id}_confirmation",
+                autocomplete: "off",
+                data: { "pave--backoffice--modal_target" => "confirmation", confirmation_value: confirmation_value },
+                class: "mt-1 w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-electric focus:outline-none focus:ring-1 focus:ring-electric" %>
+        </div>
+      <% end %>
+
+      <% submit_disabled = confirmation_input || reason_required %>
+
+      <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <button type="button"
+                data-action="pave--backoffice--modal#close"
+                class="rounded-md border border-slate-600 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+          <%= cancel_button_text %>
+        </button>
+
+        <%= form.submit confirm_button_text,
+              disabled: submit_disabled,
+              data: { "pave--backoffice--modal_target" => "submit" },
+              class: "rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+MATCHES=$(grep -R "Anella\|anella\|ANELLA" . \
+  --exclude-dir=".git" \
+  --exclude-dir=".agents" \
+  --exclude-dir="log" \
+  --exclude-dir="tmp" \
+  --exclude-dir="vendor" \
+  --exclude-dir="public" \
+  --exclude-dir="db" \
+  --exclude-dir="node_modules" \
+  --exclude-dir="storage" \
+  --exclude-dir="coverage" \
+  --exclude='*.png' \
+  --exclude='*.jpg' \
+  --exclude='*.gif' \
+  --exclude='*.ico' \
+  --exclude='*.svg' \
+  --exclude='*.pdf' \
+  --exclude='SPEC_CLEAN_PAVE_REPO.md' \
+  || true)
+
+if [ -n "$MATCHES" ]; then
+  echo "FAIL: Forbidden Anella references found:"
+  echo "$MATCHES"
+  exit 1
+fi
+
+echo "PASS: No forbidden Anella references."

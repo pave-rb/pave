@@ -1,0 +1,120 @@
+<div class="space-y-10">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-white">Dashboard</h1>
+    <p class="mt-1 text-sm text-slate-400">Platform administration and runtime overview.</p>
+  </div>
+
+  <% if @products.any? %>
+    <section>
+      <h2 class="text-lg font-semibold text-white mb-3">Registered Products</h2>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <% @products.each do |product| %>
+          <div class="rounded-lg border border-slate-700 bg-slate-800 p-4">
+            <h3 class="font-medium text-white"><%= product.label %></h3>
+            <p class="mt-1 text-xs text-slate-400"><%= product.key %></p>
+            <% if product.respond_to?(:mode) && product.mode %>
+              <span class="mt-2 inline-block rounded-full bg-slate-700 px-2 py-0.5 text-xs text-slate-300"><%= product.mode %></span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% else %>
+    <%= render "pave/backoffice/components/empty_state",
+          variant: :correctly_empty,
+          title: "No products installed",
+          description: "This Pave runtime is running without registered products. Platform modules are still available.",
+          action: ["View product registration documentation", "#"],
+          secondary_action: ["Run bin/pave doctor", "#"] %>
+  <% end %>
+
+  <% if @runtime_modules.any? %>
+    <section>
+      <h2 class="text-lg font-semibold text-white mb-3">Runtime Modules</h2>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <% @runtime_modules.each do |mod| %>
+          <div class="rounded-lg border border-slate-700 bg-slate-800 p-4">
+            <h3 class="font-medium text-white"><%= mod[:name] %></h3>
+            <p class="mt-1 text-xs text-slate-400"><%= mod[:key] %></p>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @platform_panels.any? %>
+    <section>
+      <h2 class="text-lg font-semibold text-white mb-3">Platform Panels</h2>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <% @platform_panels.each do |panel| %>
+          <div class="rounded-lg border border-slate-700 bg-slate-800 p-4">
+            <h3 class="font-medium text-white"><%= panel.label %></h3>
+            <% if panel.description %>
+              <p class="mt-1 text-xs text-slate-400"><%= panel.description %></p>
+            <% end %>
+            <p class="mt-1 text-xs text-slate-500">/admin/<%= panel.slug %></p>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @plugins.any? %>
+    <section>
+      <h2 class="text-lg font-semibold text-white mb-3">Registered Plugins</h2>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <% @plugins.each do |plugin| %>
+          <div class="rounded-lg border border-slate-700 bg-slate-800 p-4">
+            <h3 class="font-medium text-white"><%= plugin.name %></h3>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <section>
+    <h2 class="text-lg font-semibold text-white mb-3">Recent Audit Events</h2>
+    <% if @recent_audit_events.any? %>
+      <div class="overflow-hidden rounded-lg border border-slate-700">
+        <table class="min-w-full divide-y divide-slate-700">
+          <thead class="bg-slate-800">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">Time</th>
+              <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">Event</th>
+              <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">Actor</th>
+              <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">Target</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-700 bg-slate-800/50">
+            <% @recent_audit_events.each do |event| %>
+              <tr class="hover:bg-slate-700/50 transition">
+                <td class="whitespace-nowrap px-4 py-2 text-sm text-slate-300">
+                  <%= l(event.occurred_at, format: :short) rescue event.occurred_at.to_fs(:db) %>
+                </td>
+                <td class="whitespace-nowrap px-4 py-2 text-sm text-slate-300">
+                  <code class="rounded bg-slate-700 px-1 py-0.5 text-xs"><%= event.key %></code>
+                </td>
+                <td class="whitespace-nowrap px-4 py-2 text-sm text-slate-300">
+                  <%= event.actor_label || "#{event.actor_type} ##{event.actor_id}" %>
+                </td>
+                <td class="whitespace-nowrap px-4 py-2 text-sm text-slate-300">
+                  <%= event.target_label || event.target_type&.demodulize || "—" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-sm text-slate-500 italic">No recent audit events.</p>
+    <% end %>
+  </section>
+
+  <section>
+    <h2 class="text-lg font-semibold text-white mb-3">Settings Health</h2>
+    <div class="rounded-lg border border-slate-700 bg-slate-800 p-4">
+      <p class="text-sm text-slate-300">Settings interface is available.</p>
+      <p class="mt-1 text-xs text-slate-500">Configure platform settings from the Settings panel.</p>
+    </div>
+  </section>
+</div>

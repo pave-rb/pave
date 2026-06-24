@@ -1,0 +1,18 @@
+<% profile_picture = user.profile_picture_file %>
+<% display_name = user.name.presence || user.email %>
+<% initials = display_name.to_s.split(/\s+/).first(2).map { |part| part[0]&.upcase }.join.presence || "?" %>
+<% size_class = local_assigns.fetch(:size_class, "h-10 w-10") %>
+<% text_class = local_assigns.fetch(:text_class, "text-sm") %>
+<% loading = local_assigns.fetch(:loading, "lazy") %>
+
+<div class="flex-shrink-0 <%= size_class %> overflow-hidden rounded-full border border-slate-200 bg-slate-100 text-slate-500 flex items-center justify-center font-display font-bold <%= text_class %> select-none">
+  <% if profile_picture.present? %>
+    <%= tag.img src: user_picture_path(user),
+                alt: t("space.users.profile_picture_alt", name: display_name),
+                loading: loading,
+                class: "h-full w-full object-cover",
+                data: { role: "team-member-profile-picture" } %>
+  <% else %>
+    <span aria-hidden="true"><%= initials %></span>
+  <% end %>
+</div>

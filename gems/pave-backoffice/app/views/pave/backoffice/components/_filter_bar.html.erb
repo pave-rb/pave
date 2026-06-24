@@ -1,0 +1,30 @@
+<% url = local_assigns[:url] %>
+<% clear_url = local_assigns[:clear_url] || url %>
+<% turbo_frame = local_assigns[:turbo_frame] %>
+<% chips = local_assigns.fetch(:chips, []) %>
+<% form_data = { controller: "pave--backoffice--filter-bar", "pave--backoffice--filter-bar-frame-value": turbo_frame, "pave--backoffice--filter-bar-target": "form", backoffice_filter_bar: true } %>
+<% form_data[:turbo_frame] = turbo_frame if turbo_frame.present? %>
+<% form_data[:turbo_action] = "advance" if turbo_frame.present? %>
+<% chip_data = turbo_frame.present? ? { turbo_frame: turbo_frame, turbo_action: "advance" } : {} %>
+
+<%= form_tag url, method: :get, class: "space-y-3", data: form_data do %>
+  <div class="flex flex-wrap items-end gap-3">
+    <%= yield %>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <%= submit_tag "Filter", class: "rounded-md bg-electric px-4 py-2 text-sm font-medium text-white hover:bg-electric/90 transition cursor-pointer" %>
+    <%= link_to "Clear", clear_url, class: "rounded-md border border-slate-600 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-slate-700 transition", data: chip_data %>
+
+    <% if chips.any? %>
+      <div class="ml-auto flex flex-wrap items-center gap-2" data-backoffice-filter-chips>
+        <% chips.each do |label, remove_url| %>
+          <span class="inline-flex items-center rounded-full bg-slate-800 px-2.5 py-1 text-xs text-slate-300">
+            <%= label %>
+            <%= link_to "×", remove_url, class: "ml-1.5 text-slate-400 hover:text-white", data: chip_data %>
+          </span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

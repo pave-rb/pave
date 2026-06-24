@@ -1,0 +1,200 @@
+# encoding: UTF-8
+# pt-BR translations for Devise
+pt-BR:
+  devise:
+    confirmations:
+      submit_loading: "Enviando…"
+      new:
+        title: "Reenviar instruções de confirmação"
+        subtitle: "Vamos enviar outro e-mail para você concluir a criação da conta."
+        email: "Email"
+        submit: "Reenviar instruções de confirmação"
+      confirmed: "Sua conta foi confirmada com sucesso. Você está logado."
+      send_instructions: "Dentro de minutos, você receberá um e-mail com instruções para a confirmação da sua conta."
+      send_paranoid_instructions: "Se o seu endereço de e-mail estiver cadastrado, você receberá uma mensagem com instruções para confirmação da sua conta."
+    failure:
+      already_authenticated: "Você já está logado."
+      inactive: "Sua conta ainda não foi ativada."
+      invalid: "%{authentication_keys} ou senha inválida."
+      locked: "Sua conta está bloqueada."
+      last_attempt: "Você tem mais uma tentativa antes de bloquear sua conta."
+      not_found_in_database: "%{authentication_keys} ou senha inválida."
+      timeout: "Sua sessão expirou, por favor, efetue login novamente para continuar."
+      unauthenticated: "Para continuar, efetue login ou registre-se."
+      unconfirmed: "Antes de continuar, confirme a sua conta."
+    mailer:
+      confirmation_instructions:
+        subject: "Instruções de confirmação"
+      reset_password_instructions:
+        subject: "Instruções de troca de senha"
+      unlock_instructions:
+        subject: "Instruções de desbloqueio"
+      email_changed:
+        subject: "E-mail alterado"
+      password_change:
+        subject: "Senha alterada"
+      email_content:
+        confirmation_instructions:
+          preheader: "Confirme seu endereço de e-mail para concluir a configuração da conta."
+          title: "Confirme seu e-mail"
+          intro: "Use o link seguro abaixo para confirmar %{email}."
+          greeting: "Bem-vindo, %{email}."
+          body: "Você pode confirmar o e-mail da sua conta pelo link seguro desta mensagem."
+          cta: "Confirmar minha conta"
+          footer_reason: "Você recebeu este e-mail porque uma conta foi criada com este endereço."
+        reset_password_instructions:
+          preheader: "Use o link seguro deste e-mail para redefinir sua senha."
+          title: "Redefina sua senha"
+          intro: "Alguém solicitou a redefinição de senha para %{email}."
+          greeting: "Olá, %{email}."
+          instructions: "Alguém solicitou um link para alterar sua senha. Use o link seguro abaixo:"
+          body: "Se você não fez essa solicitação, pode ignorar este e-mail. Sua senha permanecerá a mesma até que você use o link acima e defina uma nova."
+          cta: "Alterar minha senha"
+          callout_title: "Aviso de segurança"
+          footer_reason: "Você recebeu este e-mail porque foi solicitada uma redefinição de senha para a sua conta."
+        unlock_instructions:
+          preheader: "Use o link seguro deste e-mail para desbloquear sua conta."
+          title: "Desbloqueie sua conta"
+          intro: "Sua conta foi bloqueada após várias tentativas de login sem sucesso."
+          greeting: "Olá, %{email}."
+          instructions: "Sua conta foi bloqueada por um número excessivo de tentativas de login sem sucesso."
+          body: "Use o link seguro deste e-mail para desbloquear sua conta e entrar novamente."
+          cta: "Desbloquear minha conta"
+          footer_reason: "Você recebeu este e-mail porque sua conta foi bloqueada após várias tentativas de login sem sucesso."
+        email_changed:
+          preheader: "O endereço de e-mail da sua conta foi atualizado."
+          title: "Endereço de e-mail atualizado"
+          intro: "Esta é uma confirmação de uma alteração na sua conta."
+          greeting: "Olá, %{email}."
+          callout_title: "Atualização da conta"
+          pending_body: "Estamos entrando em contato para avisar que seu e-mail está sendo alterado para %{email}."
+          updated_body: "Estamos entrando em contato para avisar que seu e-mail foi alterado para %{email}."
+          footer_reason: "Você recebeu este e-mail porque o endereço de e-mail da sua conta foi alterado."
+        password_change:
+          preheader: "A senha da sua conta foi alterada."
+          title: "Senha alterada"
+          intro: "Esta é uma confirmação de uma atualização de senha na sua conta."
+          greeting: "Olá, %{email}."
+          body: "Estamos entrando em contato para avisar que sua senha foi alterada."
+          footer_reason: "Você recebeu este e-mail porque a senha da sua conta foi alterada."
+    omniauth_callbacks:
+      failure: "Não foi possível autenticá-lo como %{kind} porque %{reason}."
+      success: "Autenticado com sucesso com uma conta de %{kind}."
+    shared:
+      links:
+        sign_in: "Entrar"
+        sign_up: "Cadastre-se"
+        forgot_password: "Esqueceu sua senha?"
+        confirmation: "Não recebeu as instruções de confirmação?"
+        unlock: "Não recebeu as instruções de desbloqueio?"
+        omniauth: "Entrar com %{provider}"
+      social:
+        google: "Continuar com Google"
+        apple: "Continuar com Apple"
+        divider_sign_in: "ou continue com e-mail"
+        divider_sign_up: "ou crie sua conta com e-mail"
+    passwords:
+      submit_loading: "Enviando…"
+      change_loading: "Alterando…"
+      new:
+        title: "Esqueceu sua senha?"
+        subtitle: "Informe o e-mail que você usa para entrar e enviaremos um link de redefinição."
+        email: "Email"
+        submit: "Enviar instruções de redefinição"
+      edit:
+        title: "Defina uma nova senha"
+        subtitle: "Escolha uma nova senha para voltar a acessar sua conta."
+        password: "Nova senha"
+        password_confirmation: "Confirme a nova senha"
+        minimum_length: "Mínimo de %{count} caracteres"
+        submit: "Alterar minha senha"
+      no_token: "Você só pode acessar essa página através de um e-mail de troca de senha. Se já estiver acessando por um e-mail, verifique se a URL fornecida está completa."
+      send_instructions: "Dentro de minutos, você receberá um e-mail com instruções para a troca da sua senha."
+      send_paranoid_instructions: "Se o seu endereço de e-mail estiver cadastrado, você receberá um link de recuperação da senha via e-mail."
+      updated: "Sua senha foi alterada com sucesso. Você está logado."
+      updated_not_active: "Sua senha foi alterada com sucesso."
+    registrations:
+      destroyed: "Sua conta foi cancelada com sucesso. Esperamos vê-lo novamente em breve."
+      signed_up: "Login efetuado com sucesso. Se não foi autorizado, a confirmação será enviada por e-mail."
+      signed_up_but_inactive: "Você foi cadastrado com sucesso. No entanto, não foi possível efetuar login, pois sua conta não foi ativada."
+      signed_up_but_locked: "Você foi cadastrado com sucesso. No entanto, não foi possível efetuar login, pois sua conta está bloqueada."
+      signed_up_but_unconfirmed: "Uma mensagem com um link de confirmação foi enviada para o seu endereço de e-mail. Por favor, abra o link para confirmar a sua conta."
+      update_needs_confirmation: "Você atualizou a sua conta com sucesso, mas o seu novo endereço de e-mail precisa ser confirmado. Por favor, acesse-o e clique no link de confirmação que enviamos."
+      updated: "Sua conta foi atualizada com sucesso."
+      updated_but_not_signed_in: "Sua conta foi atualizada com sucesso. Como sua senha mudou, você precisa refazer o login."
+      title: "Crie sua conta"
+      name: "Nome completo"
+      email: "Email"
+      phone_number: "Número de telefone"
+      password: "Senha"
+      password_confirmation: "Confirme a senha"
+      edit:
+        title: "Atualize sua conta"
+        subtitle: "Mantenha seus dados de acesso em dia e confirme as alterações com sua senha."
+        pending_reconfirmation_title: "Alteração de e-mail pendente"
+        pending_reconfirmation_body: "Estamos aguardando a confirmação de %{email}."
+        password_hint: "Deixe em branco se não quiser alterar a senha."
+        minimum_length: "Mínimo de %{count} caracteres"
+        current_password: "Senha atual"
+        current_password_hint: "Precisamos da sua senha atual para salvar essas alterações."
+        submit: "Atualizar conta"
+        cancel_title: "Cancelar conta"
+        cancel_body: "Isso remove permanentemente seu acesso e os dados da conta."
+        cancel_action: "Cancelar minha conta"
+        cancel_confirm: "Tem certeza?"
+        back: "Voltar"
+      sign_up_button: "Cadastrar"
+      submit_loading: "Criando conta…"
+      update_loading: "Atualizando…"
+      cancel_loading: "Cancelando…"
+      trial_message: "Comece seu trial gratuito de 14 dias. Não precisa de cartão de crédito."
+      legal_required: "Antes de criar sua conta, precisamos registrar sua aceitação dos documentos legais vigentes."
+      accept_terms_html: "Li e aceito os %{terms_link} (versão %{version})."
+      accept_privacy_html: "Li e aceito a %{privacy_link} (versão %{version})."
+      already_account: "Já tem uma conta?"
+      sign_in_link: "Entrar"
+      disabled: "Novos cadastros estão temporariamente fechados."
+    sessions:
+      signed_in: "Login efetuado com sucesso!"
+      signed_out: "Saiu com sucesso."
+      already_signed_out: "Saiu com sucesso."
+      title: "Entrar na sua conta"
+      email: "Email"
+      password: "Senha"
+      remember_me: "Lembrar-me"
+      sign_in_button: "Entrar"
+      submit_loading: "Entrando…"
+      no_account: "Não tem uma conta?"
+      sign_up_link: "Cadastre-se"
+      forgot_password_link: "Esqueceu sua senha?"
+    unlocks:
+      submit_loading: "Enviando…"
+      new:
+        title: "Reenviar instruções de desbloqueio"
+        subtitle: "Informe seu e-mail e enviaremos um novo link para desbloquear a conta."
+        email: "Email"
+        submit: "Reenviar instruções de desbloqueio"
+      send_instructions: "Dentro de minutos, você receberá um email com instruções para o desbloqueio da sua conta."
+      send_paranoid_instructions: "Se sua conta existir, você receberá um e-mail com instruções para desbloqueá-la em alguns minutos."
+      unlocked: "Sua conta foi desbloqueada com sucesso. Efetue login para continuar."
+
+  errors:
+    messages:
+      already_confirmed: "já foi confirmado"
+      confirmation_period_expired: "precisa ser confirmada em até %{period}, por favor, solicite uma nova"
+      expired: "expirou, por favor, solicite uma nova"
+      not_found: "não encontrado"
+      not_locked: "não foi bloqueado"
+      not_saved:
+        one: "Não foi possível salvar %{resource}: 1 erro"
+        other: "Não foi possível salvar %{resource}: %{count} erros."
+
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            accept_terms_of_service:
+              accepted: "deve aceitar os Termos de Uso"
+            accept_privacy_policy:
+              accepted: "deve aceitar a Política de Privacidade"

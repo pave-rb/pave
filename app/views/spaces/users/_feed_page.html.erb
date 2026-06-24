@@ -1,0 +1,11 @@
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <% users.each do |user| %>
+    <%= render "user", user: user %>
+  <% end %>
+</div>
+
+<%= render "shared/feed_frame",
+           collection: users,
+           frame_prefix: "users-page",
+           next_page_path: users_path(page: users.next_page),
+           skeleton_partial: "skeleton_loaders" %>

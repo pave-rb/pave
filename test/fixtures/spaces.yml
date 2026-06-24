@@ -1,0 +1,14 @@
+one:
+  name: "Main Clinic"
+  timezone: "America/Sao_Paulo"
+  owner: manager
+
+two:
+  name: "Second Space"
+  timezone: "UTC"
+  owner: manager_two
+
+without_subscription:
+  name: "No Subscription Space"
+  timezone: "America/Sao_Paulo"
+  owner: manager

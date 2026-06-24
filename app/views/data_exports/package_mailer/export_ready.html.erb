@@ -1,0 +1,14 @@
+<% name = @user.name.presence || @user.email %>
+<% content_for :email_preheader, t("data_exports.package_mailer.export_ready.body") %>
+<% content_for :email_eyebrow, t("mailers.shared.eyebrows.account") %>
+<% content_for :email_title, t("data_exports.package_mailer.export_ready.title") %>
+<% content_for :email_intro, t("data_exports.package_mailer.export_ready.intro") %>
+
+<p style="margin: 0 0 16px;"><%= t("data_exports.package_mailer.export_ready.greeting", name: name) %></p>
+
+<%= render "shared/mailer/callout",
+           title: t("data_exports.package_mailer.export_ready.callout_title"),
+           tone: "info",
+           content: t("data_exports.package_mailer.export_ready.body") %>
+
+<p style="margin: 20px 0 0;"><%= t("data_exports.package_mailer.export_ready.footer") %></p>

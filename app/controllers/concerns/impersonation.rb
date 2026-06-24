@@ -1,0 +1,81 @@
+# frozen_string_literal: true
+
+module Impersonation
+  extend ActiveSupport::Concern
+
+  included do
+    helper_method :impersonating?, :real_current_user
+    before_action :validate_impersonation, if: :impersonating?
+    before_action :capture_impersonation_state
+    after_action :audit_impersonation_write, if: :impersonating_during_request?
+  end
+
+  def impersonating?
+    session[:impersonated_user_id].present?
+  end
+
+  # The actual authenticated user (admin). Use for authorization that must not
+  # be affected by impersonation (e.g. require_backoffice_admin).
+  def real_current_user
+    @real_current_user ||= warden&.authenticate(scope: :user)
+  end
+
+  # Effective user: impersonated user when impersonating, else the signed-in user.
+  def current_user
+    if impersonating?
+      @impersonated_user ||= User.find_by(id: session[:impersonated_user_id])
+    else
+      real_current_user
+    end
+  end
+
+  private
+
+  def capture_impersonation_state
+    @impersonating_during_request = impersonating?
+  end
+
+  def impersonating_during_request?
+    @impersonating_during_request
+  end
+
+  def audit_impersonation_write
+    return if request.get? || request.head?
+    return if controller_path == "backoffice/impersonations"
+
+    AuditLogs::EventLogger.call(
+      event_type: "auth.impersonated_write",
+      actor: real_current_user,
+      space: current_tenant,
+      subject: current_user,
+      request: request,
+      impersonated: true,
+      metadata: {
+        controller: controller_path,
+        action: action_name,
+        method: request.request_method
+      }
+    )
+
+    Rails.logger.info(
+      "[IMPERSONATION] write_action=true" \
+      " real_user_id=#{real_current_user&.id}" \
+      " impersonated_user_id=#{session[:impersonated_user_id]}" \
+      " controller=#{controller_name}" \
+      " action=#{action_name}" \
+      " params=#{filtered_audit_params.inspect}" \
+      " timestamp=#{Time.current.iso8601}"
+    )
+  end
+
+  def filtered_audit_params
+    request.filtered_parameters.except("controller", "action", "authenticity_token")
+  end
+
+  def validate_impersonation
+    return if User.exists?(session[:impersonated_user_id])
+
+    session.delete(:impersonated_user_id)
+    redirect_to backoffice_root_path, alert: t("backoffice.impersonation.user_not_found")
+  end
+end

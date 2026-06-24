@@ -1,0 +1,88 @@
+<div class="space-y-4">
+  <%= render "shared/page_header",
+             title: t("backoffice.logs.index.title"),
+             subtitle: t("backoffice.logs.index.subtitle") %>
+
+  <div class="card-glass p-4">
+    <%= form_with url: backoffice_logs_path, method: :get, class: "grid gap-3 lg:grid-cols-[1fr_1fr_1fr_1.4fr_1.4fr_auto]" do |form| %>
+      <div>
+        <%= form.label :time_window, t("backoffice.logs.index.time_window"), class: "block text-xs font-semibold uppercase tracking-wide text-slate-500" %>
+        <%= form.select :time_window,
+                        options_for_select(Backoffice::Logs::Query::TIME_WINDOWS.keys.map { |value| [t("backoffice.logs.index.time_windows.#{value}"), value] }, @logs_query.time_window),
+                        {},
+                        class: "mt-1 block w-full rounded-md border-slate-300 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500" %>
+      </div>
+
+      <div>
+        <%= form.label :limit, t("backoffice.logs.index.limit"), class: "block text-xs font-semibold uppercase tracking-wide text-slate-500" %>
+        <%= form.select :limit,
+                        options_for_select(Backoffice::Logs::Query::LIMITS.map { |value| [value, value] }, @logs_query.limit),
+                        {},
+                        class: "mt-1 block w-full rounded-md border-slate-300 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500" %>
+      </div>
+
+      <div>
+        <%= form.label :signal, t("backoffice.logs.index.signal"), class: "block text-xs font-semibold uppercase tracking-wide text-slate-500" %>
+        <%= form.select :signal,
+                        options_for_select(Backoffice::Logs::Query::SIGNALS.map { |value| [t("backoffice.logs.index.signals.#{value}"), value] }, @logs_query.signal),
+                        {},
+                        class: "mt-1 block w-full rounded-md border-slate-300 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500" %>
+      </div>
+
+      <div>
+        <%= form.label :text, t("backoffice.logs.index.text"), class: "block text-xs font-semibold uppercase tracking-wide text-slate-500" %>
+        <%= form.text_field :text,
+                            value: @logs_query.text,
+                            placeholder: t("backoffice.logs.index.text_placeholder"),
+                            class: "mt-1 block w-full rounded-md border-slate-300 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500" %>
+      </div>
+
+      <div>
+        <%= form.label :request_id, t("backoffice.logs.index.request_id"), class: "block text-xs font-semibold uppercase tracking-wide text-slate-500" %>
+        <%= form.text_field :request_id,
+                            value: @logs_query.request_id,
+                            placeholder: t("backoffice.logs.index.request_id_placeholder"),
+                            class: "mt-1 block w-full rounded-md border-slate-300 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500" %>
+      </div>
+
+      <div class="flex items-end gap-2">
+        <%= form.submit t("backoffice.logs.index.refresh"), class: button_classes(:primary) %>
+        <%= link_to t("backoffice.logs.index.clear"), backoffice_logs_path, class: button_classes(:secondary) %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="card-glass overflow-hidden p-0">
+    <% if !@logs_result.success? %>
+      <div class="px-5 py-6" data-role="logs-unavailable">
+        <h2 class="text-sm font-semibold text-slate-900"><%= t("backoffice.logs.index.unavailable_title") %></h2>
+        <p class="mt-1 text-sm text-slate-600"><%= t("backoffice.logs.index.unavailable_body") %></p>
+      </div>
+    <% elsif @logs_result.entries.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th scope="col" class="w-52 px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"><%= t("backoffice.logs.index.when") %></th>
+              <th scope="col" class="w-56 px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"><%= t("backoffice.logs.index.source") %></th>
+              <th scope="col" class="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"><%= t("backoffice.logs.index.line") %></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 bg-white">
+            <% @logs_result.entries.each do |entry| %>
+              <tr class="hover:bg-slate-50">
+                <td class="whitespace-nowrap px-4 py-2 text-xs text-slate-500"><%= l(entry.timestamp, format: :long) %></td>
+                <td class="px-4 py-2 font-mono text-xs text-slate-500"><%= entry.labels["container_name"].presence || "—" %></td>
+                <td class="px-4 py-2">
+                  <code class="block whitespace-pre-wrap break-words font-mono text-xs leading-5 text-slate-800"><%= entry.line %></code>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="px-5 py-4 text-sm text-slate-500"><%= t("backoffice.logs.index.empty") %></p>
+    <% end %>
+  </div>
+</div>

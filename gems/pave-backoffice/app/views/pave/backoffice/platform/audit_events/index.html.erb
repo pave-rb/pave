@@ -1,0 +1,122 @@
+<% content_for :title, "Audit Log" %>
+
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-white">Audit Log</h1>
+    <p class="mt-1 text-sm text-slate-400">Backoffice audit event log. All state-mutating actions are recorded.</p>
+  </div>
+
+  <%= turbo_frame_tag "backoffice_audit_index" do %>
+    <%= render layout: "pave/backoffice/components/filter_bar",
+          locals: { url: pave_backoffice.audit_path, clear_url: pave_backoffice.audit_path, turbo_frame: "backoffice_audit_index", chips: backoffice_filter_chips } do %>
+      <div>
+        <%= label_tag :from_date, "From", class: "mb-1 block text-xs font-medium text-slate-400" %>
+        <%= date_field_tag :from_date, params[:from_date], class: backoffice_filter_input_class %>
+      </div>
+
+      <div>
+        <%= label_tag :to_date, "To", class: "mb-1 block text-xs font-medium text-slate-400" %>
+        <%= date_field_tag :to_date, params[:to_date], class: backoffice_filter_input_class %>
+      </div>
+
+      <div>
+        <%= label_tag :key, "Event key", class: "mb-1 block text-xs font-medium text-slate-400" %>
+        <%= text_field_tag :key, params[:key], placeholder: "Search event key…", class: backoffice_filter_input_class %>
+      </div>
+
+      <div>
+        <%= label_tag :actor, "Actor", class: "mb-1 block text-xs font-medium text-slate-400" %>
+        <%= text_field_tag :actor, params[:actor], placeholder: "Name or ID…", class: backoffice_filter_input_class %>
+      </div>
+
+      <div>
+        <%= label_tag :source, "Source", class: "mb-1 block text-xs font-medium text-slate-400" %>
+        <%= select_tag :source,
+              options_for_select([["All", ""], *@distinct_sources.map { |s| [s, s] }], params[:source]),
+              class: backoffice_filter_select_class %>
+      </div>
+
+      <div>
+        <%= label_tag :target_type, "Target type", class: "mb-1 block text-xs font-medium text-slate-400" %>
+        <%= select_tag :target_type,
+              options_for_select([["All", ""], *@distinct_target_types.map { |t| [t.demodulize, t] }], params[:target_type]),
+              class: backoffice_filter_select_class %>
+      </div>
+
+      <div>
+        <%= label_tag :product, "Context", class: "mb-1 block text-xs font-medium text-slate-400" %>
+        <%= select_tag :product,
+              options_for_select([["All", ""], ["Backoffice only", "backoffice"], ["Product only", "product"]], params[:product]),
+              class: backoffice_filter_select_class %>
+      </div>
+
+      <div>
+        <%= label_tag :mutation_only, class: "mb-1 block text-xs font-medium text-slate-400" do %>
+          <%= check_box_tag :mutation_only, "1", params[:mutation_only] == "1",
+                class: "mr-1.5 rounded border-slate-600 bg-slate-700 text-electric focus:ring-electric" %>
+          Mutation only
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= turbo_frame_tag "audit_event_detail" %>
+
+    <%= render "pave/backoffice/components/data_table",
+          records: @events,
+          empty_message: "No audit events found.",
+          columns: [
+          backoffice_table_column(:time, header: "Time") do |event|
+            detail_path = pave_backoffice.audit_event_path(event, request.query_parameters)
+            link_to(detail_path, data: { turbo_frame: "audit_event_detail" }, class: "block text-slate-300 hover:text-white") do
+              l(event.occurred_at, format: :short) rescue event.occurred_at.to_fs(:db)
+            end
+          end,
+          backoffice_table_column(:event, header: "Event") do |event|
+            detail_path = pave_backoffice.audit_event_path(event, request.query_parameters)
+            link_to(detail_path, data: { turbo_frame: "audit_event_detail" }, class: "block text-slate-300 hover:text-white") do
+              tag.code(event.key, class: "rounded bg-slate-700 px-1 py-0.5 text-xs")
+            end
+          end,
+          backoffice_table_column(:actor) do |event|
+            detail_path = pave_backoffice.audit_event_path(event, request.query_parameters)
+            link_to(event.actor_label || "#{event.actor_type&.demodulize} ##{event.actor_id}", detail_path,
+              data: { turbo_frame: "audit_event_detail" },
+              class: "block text-slate-300 hover:text-white")
+          end,
+          backoffice_table_column(:source) do |event|
+            detail_path = pave_backoffice.audit_event_path(event, request.query_parameters)
+            link_to(event.source || "—", detail_path,
+              data: { turbo_frame: "audit_event_detail" },
+              class: "block text-slate-300 hover:text-white")
+          end,
+          backoffice_table_column(:context) do |event|
+            detail_path = pave_backoffice.audit_event_path(event, request.query_parameters)
+            link_to(detail_path, data: { turbo_frame: "audit_event_detail" }, class: "block") do
+              render("pave/backoffice/components/context_badge", variant: event.space_id.present? ? :product : :platform)
+            end
+          end,
+          backoffice_table_column(:target) do |event|
+            detail_path = pave_backoffice.audit_event_path(event, request.query_parameters)
+            link_to(event.target_label || event.target_type&.demodulize || "—", detail_path,
+              data: { turbo_frame: "audit_event_detail" },
+              class: "block text-slate-300 hover:text-white")
+          end,
+          backoffice_table_column(:metadata) do |event|
+            metadata_label = event.metadata.presence ? (event.metadata.size == 1 ? event.metadata.keys.first.to_s : "#{event.metadata.size} keys") : "—"
+            detail_path = pave_backoffice.audit_event_path(event, request.query_parameters)
+            link_to(metadata_label, detail_path,
+              data: { turbo_frame: "audit_event_detail" },
+              class: "block text-slate-400 hover:text-white",
+              title: event.metadata.to_json)
+          end,
+          backoffice_table_column(:details, classes: "text-right") do |event|
+            detail_path = pave_backoffice.audit_event_path(event, request.query_parameters)
+            link_to("Open", detail_path,
+              data: { turbo_frame: "audit_event_detail" },
+              class: "text-electric hover:underline")
+          end
+        ] %>
+
+    <%= render "pave/backoffice/components/pagination", collection: @events %>
+  <% end %>
+</div>

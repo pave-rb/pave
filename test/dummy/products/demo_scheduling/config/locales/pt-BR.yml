@@ -1,0 +1,5 @@
+pt-BR:
+  backoffice:
+    products:
+      index:
+        demo_scheduling: "Demonstração de Agendamento"

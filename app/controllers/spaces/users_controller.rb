@@ -1,0 +1,113 @@
+# frozen_string_literal: true
+
+module Spaces
+  class UsersController < Spaces::BaseController
+    include RequirePermission
+
+    require_permission :manage_team, only: [ :new, :create, :edit, :update, :destroy ], redirect_to: :users_path
+    before_action :set_user, only: [ :show, :edit, :update, :destroy ]
+
+    def index
+      @users = current_tenant.users.includes(:profile_picture_file).order(:email)
+      if params[:query].present?
+        sanitized = ActiveRecord::Base.sanitize_sql_like(params[:query].strip)
+        @users = @users.where("email ILIKE ? OR name ILIKE ?", "%#{sanitized}%", "%#{sanitized}%")
+      end
+      @users = @users.page(params[:page]).per(20)
+    end
+
+    def show
+    end
+
+    def new
+      if plan_limit_reached?(:create_team_member)
+        redirect_to users_path, alert: t("billing.limits.team_members_exceeded") and return
+      end
+      @user = User.new
+      @user.space_id = current_tenant.id
+    end
+
+    def create
+      if plan_limit_reached?(:create_team_member)
+        redirect_to users_path, alert: t("billing.limits.team_members_exceeded") and return
+      end
+      @user = User.new(user_params)
+      @user.space_id = current_tenant.id
+      @user.password = SecureRandom.hex(32)
+      before_permissions = []
+
+      if @user.save
+        audit_permission_change(user: @user, before_permissions:)
+        @user.send_reset_password_instructions
+        redirect_to user_path(@user)
+      else
+        render :new
+      end
+    end
+
+    def edit
+    end
+
+    def update
+      before_permissions = @user.permission_names
+
+      if @user.update(update_user_params)
+        audit_permission_change(user: @user, before_permissions:)
+        redirect_to users_path
+      else
+        render :edit
+      end
+    end
+
+    def destroy
+      if @user.space_owner?(current_tenant)
+        redirect_to users_path, alert: t("space.users.destroy.cannot_remove_owner")
+        return
+      end
+      @user.destroy
+      redirect_to users_path
+    end
+
+    private
+
+    def set_user
+      @user = current_tenant.users.includes(:profile_picture_file).find(params[:id])
+    end
+
+    def plan_limit_reached?(action)
+      !Billing::PlanEnforcer.can?(current_tenant, action)
+    end
+
+    def user_params
+      permitted = [ :email, :name, :phone_number, :role ]
+      permitted << { permission_names_param: [] } if current_user.can?(:manage_team, space: current_tenant)
+      params.require(:user).permit(permitted)
+    end
+
+    def update_user_params
+      permitted = [ :role ]
+      permitted << { permission_names_param: [] } if current_user.can?(:manage_team, space: current_tenant)
+      params.require(:user).permit(permitted)
+    end
+
+    def audit_permission_change(user:, before_permissions:)
+      after_permissions = user.reload.user_permissions.order(:permission).pluck(:permission)
+      added_permissions = after_permissions - before_permissions
+      removed_permissions = before_permissions - after_permissions
+      return if added_permissions.empty? && removed_permissions.empty?
+
+      AuditLogs::EventLogger.call(
+        event_type: "authorization.team_permissions_changed",
+        actor: audit_actor,
+        space: current_tenant,
+        subject: user,
+        request: request,
+        impersonated: impersonating?,
+        metadata: audit_context_metadata.merge(
+          added_permissions: added_permissions,
+          removed_permissions: removed_permissions
+        )
+      )
+    end
+  end
+end

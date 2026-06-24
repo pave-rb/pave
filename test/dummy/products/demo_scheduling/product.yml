@@ -1,0 +1,9 @@
+name: DemoScheduling
+namespace: demo_scheduling
+version: "1.0.0"
+dependencies:
+  - gems/pave-core
+  - gems/pave-tenancy
+  - gems/pave-identity
+  - gems/pave-audit
+  - gems/pave-backoffice

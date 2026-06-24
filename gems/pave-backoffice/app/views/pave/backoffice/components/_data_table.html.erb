@@ -1,0 +1,67 @@
+<% records = local_assigns[:records] %>
+<% columns = local_assigns[:columns] %>
+<% empty_message = local_assigns.fetch(:empty_message, "No records found.") %>
+<% table_id = local_assigns[:table_id] %>
+<% turbo_frame = local_assigns[:turbo_frame] %>
+
+<% table_inner = capture do %>
+  <div class="relative overflow-hidden rounded-lg border border-slate-700" <%= "id=\"#{table_id}\"".html_safe if table_id.present? %> data-backoffice-data-table data-controller="pave--backoffice--data-table">
+    <div data-pave--backoffice--data-table-target="loading" hidden class="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/70 backdrop-blur-sm">
+      <span class="inline-flex items-center gap-2 text-sm text-slate-300">
+        <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        Loading…
+      </span>
+    </div>
+    <div data-pave--backoffice--data-table-target="error" hidden class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-red-950/60 p-4 text-center text-sm text-red-100">
+      <p>Unable to load table.</p>
+      <button type="button" data-action="pave--backoffice--data-table#retry" class="mt-2 rounded-md border border-red-400/40 px-3 py-1 text-xs hover:bg-red-900/40">
+        Retry
+      </button>
+    </div>
+    <table class="min-w-full divide-y divide-slate-700">
+      <thead class="bg-slate-800">
+        <tr>
+          <% columns.each do |column| %>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400 <%= column.classes %>" data-backoffice-data-table-column="<%= column.key %>">
+              <%= column.header %>
+            </th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-700 bg-slate-800/50" data-backoffice-data-table-body>
+        <% if records.any? %>
+          <% records.each do |record| %>
+            <tr class="hover:bg-slate-700/50 transition">
+              <% columns.each do |column| %>
+                <td class="px-4 py-2 text-sm <%= column.classes %>">
+                  <% if column.cell %>
+                    <%= capture(record, &column.cell) %>
+                  <% else %>
+                    <%= record.public_send(column.key) %>
+                  <% end %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr data-backoffice-empty-state>
+            <td colspan="<%= columns.size %>" class="px-4 py-8 text-center text-sm text-slate-500 italic">
+              <%= empty_message %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+
+<% if turbo_frame.present? %>
+  <%= turbo_frame_tag turbo_frame do %>
+    <%= table_inner %>
+  <% end %>
+<% else %>
+  <%= table_inner %>
+<% end %>

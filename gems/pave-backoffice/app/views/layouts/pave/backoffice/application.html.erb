@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <title><%= content_for(:title) || "Pave Backoffice" %></title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <%= stylesheet_link_tag "application", *Pave.products.stylesheets, "flatpickr", "tailwind", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-screen bg-slate-950 text-slate-100 antialiased" data-backoffice-layout="runtime">
+    <%= render "pave/backoffice/shell" %>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+name: My Pavê Host App
+type: host_app
+pave_version: 0.1.0
+plugins: []
+products: []

@@ -1,0 +1,80 @@
+# examples:
+#   periodic_cleanup:
+#     class: CleanSoftDeletedRecordsJob
+#     queue: background
+#     args: [ 1000, { batch_size: 500 } ]
+#     schedule: every hour
+#   periodic_cleanup_with_command:
+#     command: "SoftDeletedRecord.due.delete_all"
+#     priority: 2
+#     schedule: at 5am every day
+
+default: &default
+  clear_solid_queue_finished_jobs:
+    command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
+    schedule: every hour at minute 12
+  billing_expire_trials:
+    class: Billing::ExpireTrialsJob
+    queue: default
+    schedule: at 6am every day
+  billing_refresh_monthly_quota:
+    class: Billing::RefreshMonthlyQuotaJob
+    queue: default
+    schedule: at 3am every day
+  billing_sync_subscriptions:
+    class: Billing::SyncSubscriptionStateJob
+    queue: default
+    schedule: at 4am every day
+  billing_trial_ending_reminder:
+    class: Billing::TrialEndingReminderJob
+    queue: default
+    schedule: at 9am every day
+  billing_credits_low_check:
+    class: Billing::CreditsLowCheckJob
+    queue: default
+    schedule: at 10am every day
+  billing_process_cancellations:
+    class: Billing::ProcessCancellationJob
+    queue: default
+    schedule: at 2am every day
+  billing_apply_downgrades:
+    class: Billing::ApplyDowngradeJob
+    queue: default
+    schedule: at 5am every day
+  billing_payment_due_reminders:
+    class: Billing::PaymentDueReminderJob
+    queue: default
+    schedule: at 8am every day
+  lgpd_process_account_deletion_requests:
+    class: Retention::ProcessAccountDeletionRequestsJob
+    queue: default
+    schedule: every hour at minute 18
+  lgpd_purge_discarded_appointments:
+    class: Retention::PurgeDiscardedAppointmentsJob
+    queue: default
+    schedule: at 1am every day
+  scheduling_dispatch_due_reminders:
+    class: Scheduling::Reminders::DispatchDueJob
+    queue: whatsapp_outbound
+    schedule: every 2 minutes
+  scheduling_reap_stuck_reminders:
+    class: Scheduling::Reminders::ReaperJob
+    queue: default
+    schedule: at 7am every day
+
+development:
+  <<: *default
+
+staging:
+  <<: *default
+  backups_nightly_database:
+    class: Backups::NightlyDatabaseBackupJob
+    queue: default
+    schedule: at 2:30am every day
+
+production:
+  <<: *default
+  backups_nightly_database:
+    class: Backups::NightlyDatabaseBackupJob
+    queue: default
+    schedule: at 2:30am every day

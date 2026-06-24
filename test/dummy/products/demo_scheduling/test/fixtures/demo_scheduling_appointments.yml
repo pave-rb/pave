@@ -1,0 +1,13 @@
+one:
+  title: "Consultation with Dr. Smith"
+  scheduled_at: 2026-06-24 10:00:00
+  status: confirmed
+  created_at: 2026-06-23 10:00:00
+  updated_at: 2026-06-23 10:00:00
+
+two:
+  title: "Follow-up appointment"
+  scheduled_at: 2026-06-25 14:00:00
+  status: pending
+  created_at: 2026-06-23 10:00:00
+  updated_at: 2026-06-23 10:00:00

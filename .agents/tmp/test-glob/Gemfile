@@ -1,0 +1,5 @@
+source "https://rubygems.org"
+
+gem "pave-core", git: "/Users/italo/workspace/elos-workspace/pave", glob: "gems/pave-core/*.gemspec", tag: "v0.1.0-internal"
+gem "rails", "~> 8.1.0"
+gem "sqlite3"

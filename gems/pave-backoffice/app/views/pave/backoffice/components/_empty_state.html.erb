@@ -1,0 +1,35 @@
+<% variant = local_assigns.fetch(:variant, :correctly_empty) %>
+<% title = local_assigns.fetch(:title, default_empty_state_title(variant)) %>
+<% description = local_assigns.fetch(:description, default_empty_state_description(variant)) %>
+<% icon = local_assigns[:icon] %>
+<% action = local_assigns[:action] %>
+<% secondary_action = local_assigns[:secondary_action] %>
+<% data = local_assigns.fetch(:data, {}) %>
+
+<section class="rounded-lg border border-dashed <%= empty_state_border_classes(variant) %> bg-slate-800/50 p-8 text-center" data-backoffice-empty-state="<%= variant %>" <% data.each do |key, value| %> data-<%= key.to_s.dasherize %>="<%= value %>"<% end %>>
+  <% if icon %>
+    <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full <%= empty_state_icon_classes(variant) %>">
+      <%= icon %>
+    </div>
+  <% end %>
+
+  <h2 class="text-xl font-semibold text-white"><%= title %></h2>
+
+  <% if description.present? %>
+    <p class="mx-auto mt-2 max-w-lg text-sm text-slate-400"><%= description %></p>
+  <% end %>
+
+  <% if action || secondary_action %>
+    <div class="mt-5 flex flex-wrap justify-center gap-3">
+      <% if action %>
+        <% action_label, action_path, action_options = action %>
+        <%= link_to action_label, action_path, (action_options || {}).merge(class: "rounded-md bg-electric px-4 py-2 text-sm font-medium text-white hover:bg-electric/90 transition") %>
+      <% end %>
+
+      <% if secondary_action %>
+        <% secondary_label, secondary_path, secondary_options = secondary_action %>
+        <%= link_to secondary_label, secondary_path, (secondary_options || {}).merge(class: "rounded-md border border-slate-600 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700 transition") %>
+      <% end %>
+    </div>
+  <% end %>
+</section>

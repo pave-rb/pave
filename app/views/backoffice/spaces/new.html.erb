@@ -1,0 +1,48 @@
+<div class="space-y-6">
+  <%= render "shared/page_header", title: t("backoffice.spaces.new.title"), subtitle: t("backoffice.spaces.new.subtitle") %>
+
+  <%= render layout: "shared/card" do %>
+    <%= form_with model: [:platform, @space], url: backoffice_spaces_path, class: "space-y-4" do |form| %>
+      <%= render "shared/error_messages", resource: @space %>
+      <%= render "shared/error_messages", resource: @manager if defined?(@manager) && @manager&.errors&.any? %>
+
+      <div>
+        <%= form.label :name, t("backoffice.spaces.new.name_label"), class: form_label_classes %>
+        <%= form.text_field :name, required: true, class: form_input_classes %>
+      </div>
+
+      <div>
+        <%= form.label :timezone, t("backoffice.spaces.new.timezone_label"), class: form_label_classes %>
+        <%= form.text_field :timezone, class: form_input_classes %>
+      </div>
+
+      <div class="border-t border-slate-200 pt-4">
+        <p class="text-sm font-medium text-slate-700 mb-2"><%= t("backoffice.spaces.new.manager_section") %></p>
+        <p class="text-xs text-slate-500 mb-3"><%= t("backoffice.spaces.new.manager_hint") %></p>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label for="manager_email" class="<%= form_label_classes %>"><%= t("backoffice.spaces.new.manager_email") %></label>
+            <%= text_field_tag :manager_email, params[:manager_email] || @manager&.email, class: form_input_classes("max-w-none") %>
+          </div>
+          <div>
+            <label for="manager_name" class="<%= form_label_classes %>"><%= t("backoffice.spaces.new.manager_name") %></label>
+            <%= text_field_tag :manager_name, params[:manager_name] || @manager&.name, class: form_input_classes("max-w-none") %>
+          </div>
+          <div>
+            <label for="manager_password" class="<%= form_label_classes %>"><%= t("backoffice.spaces.new.manager_password") %></label>
+            <%= password_field_tag :manager_password, nil, class: form_input_classes("max-w-none") %>
+          </div>
+          <div>
+            <label for="manager_password_confirmation" class="<%= form_label_classes %>"><%= t("backoffice.spaces.new.manager_password_confirmation") %></label>
+            <%= password_field_tag :manager_password_confirmation, nil, class: form_input_classes("max-w-none") %>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-3">
+        <%= form.submit t("backoffice.spaces.new.submit"), class: button_classes(:primary), data: { turbo_submits_with: t("shared.submitting") } %>
+        <%= link_to t("backoffice.spaces.new.back"), backoffice_spaces_path, class: button_classes(:secondary) %>
+      </div>
+    <% end %>
+  <% end %>
+</div>
