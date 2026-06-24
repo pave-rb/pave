@@ -48,7 +48,7 @@ module Pave
             source: "product",
             space_id: 1,
             metadata: { order_id: 42 },
-            occurred_at: 6.hours.ago
+            occurred_at: 30.minutes.ago
           )
         end
 
