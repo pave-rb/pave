@@ -1,0 +1,12 @@
+<nav class="text-sm text-slate-500" aria-label="Breadcrumb" data-backoffice-breadcrumbs>
+  <% explicit_crumbs = respond_to?(:backoffice_breadcrumbs) ? backoffice_breadcrumbs.to_a : [] %>
+  <% crumbs = explicit_crumbs.any? ? explicit_crumbs.map { |crumb| [crumb.title, crumb.route] } : backoffice_default_breadcrumbs %>
+  <% crumbs.each.with_index do |(title, route), index| %>
+    <%= " / " unless index.zero? %>
+    <% if route.present? && index != crumbs.length - 1 %>
+      <%= link_to title, route, class: "text-electric hover:underline" %>
+    <% else %>
+      <span><%= title %></span>
+    <% end %>
+  <% end %>
+</nav>

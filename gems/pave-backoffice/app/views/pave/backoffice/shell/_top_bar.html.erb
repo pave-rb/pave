@@ -1,0 +1,30 @@
+<header class="border-b border-slate-800 bg-slate-950" data-backoffice-top-bar="runtime">
+  <div class="mx-auto flex min-h-14 max-w-8xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+    <%= link_to respond_to?(:app_name) ? app_name : "Pave",
+                pave_backoffice.dashboard_path,
+                class: "font-display text-sm font-bold tracking-tight text-white" %>
+
+    <span class="rounded-full border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs font-medium text-slate-300" data-backoffice-environment>
+      <%= backoffice_environment_label %>
+    </span>
+
+    <%= render "pave/backoffice/components/context_badge",
+          variant: backoffice_current_product ? :product : :platform,
+          label: backoffice_current_product ? [backoffice_current_product.label, backoffice_current_panel&.label].compact.join(" · ") : nil,
+          data: { backoffice_context_pill: true } %>
+
+    <div class="ml-auto flex flex-wrap items-center gap-3 text-sm">
+      <% if respond_to?(:current_admin) && current_admin %>
+        <span class="text-slate-400" data-backoffice-admin-identity>
+          Super admin · <span class="text-slate-200"><%= current_admin.email %></span>
+        </span>
+      <% end %>
+
+      <%= button_to "Sign out of backoffice",
+                    pave_backoffice.sign_out_path,
+                    method: :delete,
+                    data: { turbo: false },
+                    class: "rounded-md border border-slate-700 px-3 py-1.5 text-sm text-slate-200 transition hover:bg-slate-800 hover:text-white" %>
+    </div>
+  </div>
+</header>

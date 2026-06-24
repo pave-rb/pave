@@ -1,0 +1,8 @@
+<% collection = local_assigns[:collection] %>
+<% window = local_assigns.fetch(:window, 2) %>
+
+<% if collection.respond_to?(:total_pages) && collection.total_pages > 1 %>
+  <div class="flex justify-center" data-backoffice-pagination>
+    <%= paginate collection, window: window %>
+  </div>
+<% end %>

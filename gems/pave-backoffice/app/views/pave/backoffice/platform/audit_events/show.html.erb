@@ -1,0 +1,58 @@
+<%= turbo_frame_tag "audit_event_detail" do %>
+  <%= render layout: "pave/backoffice/components/drawer",
+        locals: {
+          id: "audit-event-detail",
+          title: @event.key,
+          subtitle: (l(@event.occurred_at, format: :long) rescue @event.occurred_at.to_fs(:db)),
+          scope_label: "Audit event detail",
+          close_path: pave_backoffice.audit_path(request.query_parameters),
+          close_data: { turbo_frame: "_top" }
+        } do %>
+    <section class="rounded-lg border border-slate-700 bg-slate-800/60 p-4">
+      <h3 class="text-sm font-semibold text-white">Event envelope</h3>
+      <dl class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">ID</dt>
+          <dd class="mt-1 font-mono text-sm text-slate-200"><%= @event.id %></dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Source</dt>
+          <dd class="mt-1 text-sm text-slate-200"><%= @event.source.presence || "—" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Context</dt>
+          <dd class="mt-1 text-sm text-slate-200"><%= @event.space_id.present? ? "Product" : "Platform" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Space ID</dt>
+          <dd class="mt-1 font-mono text-sm text-slate-200"><%= @event.space_id.presence || "—" %></dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="rounded-lg border border-slate-700 bg-slate-800/60 p-4">
+      <h3 class="text-sm font-semibold text-white">Actor and target</h3>
+      <dl class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Actor</dt>
+          <dd class="mt-1 text-sm text-slate-200"><%= @event.actor_label.presence || @event.actor_type.presence || "—" %></dd>
+          <dd class="mt-1 font-mono text-xs text-slate-500"><%= [@event.actor_type, @event.actor_id].compact.join(" #").presence || "—" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Target</dt>
+          <dd class="mt-1 text-sm text-slate-200"><%= @event.target_label.presence || @event.target_type.presence || "—" %></dd>
+          <dd class="mt-1 font-mono text-xs text-slate-500"><%= [@event.target_type, @event.target_id].compact.join(" #").presence || "—" %></dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="rounded-lg border border-slate-700 bg-slate-800/60 p-4">
+      <h3 class="text-sm font-semibold text-white">Metadata</h3>
+      <% if @event.metadata.present? %>
+        <pre class="mt-4 overflow-x-auto rounded-md border border-slate-700 bg-slate-950 p-4 text-xs leading-relaxed text-slate-200"><%= JSON.pretty_generate(@event.metadata) %></pre>
+      <% else %>
+        <p class="mt-4 text-sm italic text-slate-500">No metadata recorded for this event.</p>
+      <% end %>
+    </section>
+  <% end %>
+<% end %>

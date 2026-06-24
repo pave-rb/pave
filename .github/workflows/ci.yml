@@ -1,0 +1,45 @@
+name: Pavê Runtime CI
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/pave_test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - run: bundle exec rake test
+      - run: scripts/build-gems
+      - run: scripts/repo-check-clean
+      - run: bundle exec rails zeitwerk:check
+      - run: bin/pave doctor
+      - run: bundle exec packwerk check
+
+      # Target/follow-up steps
+      # - run: scripts/smoke-install
+      # - run: bundle exec rubocop

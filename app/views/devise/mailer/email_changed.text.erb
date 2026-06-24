@@ -1,0 +1,7 @@
+<%= t("devise.mailer.email_content.email_changed.greeting", email: @email) %>
+
+<% if @resource.try(:unconfirmed_email?) %>
+<%= t("devise.mailer.email_content.email_changed.pending_body", email: @resource.unconfirmed_email) %>
+<% else %>
+<%= t("devise.mailer.email_content.email_changed.updated_body", email: @resource.email) %>
+<% end %>

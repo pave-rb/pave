@@ -1,0 +1,7 @@
+<% variant = local_assigns.fetch(:variant, :platform) %>
+<% label = local_assigns[:label] %>
+<% data = local_assigns.fetch(:data, {}) %>
+
+<span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium <%= backoffice_context_badge_classes(variant) %>" data-backoffice-context-badge="<%= variant %>" <% data.each do |key, value| %> data-<%= key.to_s.dasherize %>="<%= value %>"<% end %>>
+  <%= backoffice_context_badge_text(variant, label) %>
+</span>

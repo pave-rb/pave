@@ -1,0 +1,128 @@
+<% content_for :title, @user.name.presence || @user.email %>
+
+<div class="space-y-8">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-white"><%= @user.name.presence || @user.email %></h1>
+    <p class="mt-1 text-sm text-slate-400"><%= @user.email %></p>
+  </div>
+
+  <section class="rounded-lg border border-slate-700 bg-slate-800 p-5">
+    <h2 class="text-lg font-semibold text-white mb-4">Identity</h2>
+    <dl class="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">Name</dt>
+        <dd class="mt-1 text-sm text-slate-200"><%= @user.name.presence || "—" %></dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">Email</dt>
+        <dd class="mt-1 text-sm text-slate-200"><%= @user.email %></dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">Phone</dt>
+        <dd class="mt-1 text-sm text-slate-200"><%= @user.phone_number.presence || "—" %></dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">Role</dt>
+        <dd class="mt-1 text-sm text-slate-200"><%= @user.role.presence || "—" %></dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">Created</dt>
+        <dd class="mt-1 text-sm text-slate-200"><%= l(@user.created_at.to_date, format: :default) rescue @user.created_at.to_fs(:db) %></dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">Status</dt>
+        <dd class="mt-1 text-sm">
+          <% if @user.confirmed_at.present? %>
+            <span class="inline-flex items-center rounded-full bg-emerald-900/60 px-2 py-0.5 text-xs font-medium text-emerald-300">Confirmed</span>
+          <% else %>
+            <span class="inline-flex items-center rounded-full bg-slate-700 px-2 py-0.5 text-xs font-medium text-slate-400">Unconfirmed</span>
+          <% end %>
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="rounded-lg border border-slate-700 bg-slate-800 p-5">
+    <h2 class="text-lg font-semibold text-white mb-4">Platform Access</h2>
+    <div class="flex items-center gap-3">
+      <% if @user.super_admin? %>
+        <span class="inline-flex items-center rounded-full bg-amber-900/60 px-3 py-1 text-sm font-medium text-amber-300">Super admin</span>
+        <span class="text-sm text-slate-400">This user has full platform backoffice access.</span>
+      <% else %>
+        <span class="inline-flex items-center rounded-full bg-slate-700 px-3 py-1 text-sm font-medium text-slate-400">Standard user</span>
+        <span class="text-sm text-slate-500">This user does not have backoffice access.</span>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="rounded-lg border border-red-900/60 bg-slate-800 p-5">
+    <h2 class="text-lg font-semibold text-red-400 mb-4">Danger Zone</h2>
+    <p class="mb-4 text-sm text-slate-400">Modify platform super admin access. All changes are recorded in the audit log.</p>
+    <div class="flex gap-3">
+      <% if @user.super_admin? %>
+        <%= button_to "Revoke super admin access",
+              pave_backoffice.revoke_super_admin_user_path(@user),
+              method: :post,
+              data: { confirm: "Are you sure you want to revoke super admin access for #{@user.email}? This action is recorded in the audit log." },
+              class: "rounded-md bg-red-700 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 transition cursor-pointer" %>
+      <% else %>
+        <%= button_to "Grant super admin access",
+              pave_backoffice.grant_super_admin_user_path(@user),
+              method: :post,
+              data: { confirm: "Are you sure you want to grant super admin access to #{@user.email}? This action is recorded in the audit log." },
+              class: "rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-500 transition cursor-pointer" %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="rounded-lg border border-slate-700 bg-slate-800 p-5">
+    <h2 class="text-lg font-semibold text-white mb-4">Product Memberships</h2>
+    <p class="mb-4 rounded-md bg-slate-700/50 px-4 py-3 text-sm text-slate-400">
+      These memberships belong to product applications. They do not define backoffice access.
+    </p>
+    <% if @user.space_membership %>
+      <div class="rounded-md border border-slate-600 bg-slate-700/30 p-3">
+        <p class="text-sm text-slate-200"><%= @user.space_membership.space&.name || "Space ##{@user.space_membership.space_id}" %></p>
+        <p class="mt-1 text-xs text-slate-500">Space ID: <%= @user.space_membership.space_id %></p>
+      </div>
+    <% else %>
+      <p class="text-sm text-slate-500 italic">No product memberships.</p>
+    <% end %>
+  </section>
+
+  <section class="rounded-lg border border-slate-700 bg-slate-800 p-5">
+    <h2 class="text-lg font-semibold text-white mb-4">Recent Audit Events</h2>
+    <% if @recent_events.any? %>
+      <div class="overflow-hidden rounded-lg border border-slate-700">
+        <table class="min-w-full divide-y divide-slate-700">
+          <thead class="bg-slate-800">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">Time</th>
+              <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">Event</th>
+              <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">Source</th>
+              <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">Target</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-700 bg-slate-800/50">
+            <% @recent_events.each do |event| %>
+              <tr class="hover:bg-slate-700/50 transition">
+                <td class="whitespace-nowrap px-4 py-2 text-sm text-slate-300">
+                  <%= l(event.occurred_at, format: :short) rescue event.occurred_at.to_fs(:db) %>
+                </td>
+                <td class="whitespace-nowrap px-4 py-2 text-sm text-slate-300">
+                  <code class="rounded bg-slate-700 px-1 py-0.5 text-xs"><%= event.key %></code>
+                </td>
+                <td class="whitespace-nowrap px-4 py-2 text-sm text-slate-300"><%= event.source || "—" %></td>
+                <td class="whitespace-nowrap px-4 py-2 text-sm text-slate-300">
+                  <%= event.target_label || event.target_type&.demodulize || "—" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-sm text-slate-500 italic">No audit events for this user.</p>
+    <% end %>
+  </section>
+</div>

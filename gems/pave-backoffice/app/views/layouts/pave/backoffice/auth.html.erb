@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <title><%= content_for(:title) || "Sign in" %></title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <%= stylesheet_link_tag "application", "tailwind", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+    <div class="flex min-h-screen items-center justify-center px-4">
+      <div class="w-full max-w-sm">
+        <%= yield %>
+      </div>
+    </div>
+  </body>
+</html>

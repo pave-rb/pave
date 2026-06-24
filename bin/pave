@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "pathname"
+
+ROOT = Pathname.new(File.expand_path("..", __dir__))
+
+require "bundler/setup"
+require_relative "../gems/pave/lib/pave/cli"
+
+exit PaveCli.run(ARGV, root: ROOT)

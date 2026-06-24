@@ -1,0 +1,33 @@
+<% content_for(:wide_layout) { "" } %>
+<% if turbo_frame_request? %>
+  <turbo-frame id="<%= request.headers["Turbo-Frame"] %>">
+    <%= render "feed_page", users: @users %>
+  </turbo-frame>
+<% else %>
+  <div class="space-y-6" data-controller="sticky-stack">
+    <% page_actions = capture do %>
+      <% if current_user.can?(:manage_team) %>
+        <% if Billing::PlanEnforcer.can?(current_tenant, :create_team_member) %>
+          <%= link_to t("space.users.index.new_button"), new_user_path, class: button_classes(:primary) %>
+        <% else %>
+          <span class="text-sm text-slate-500"><%= t("billing.limits.team_members_exceeded") %></span>
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= render "shared/page_header", title: t("space.users.index.title"), actions: page_actions %>
+
+    <%= render "shared/search_bar",
+               url: users_path,
+               query: params[:query],
+               placeholder: t("space.users.index.filters.search_placeholder"),
+               turbo_frame: "users-feed",
+               clear_path: users_path,
+               clear_label: t("space.users.index.filters.clear") %>
+
+    <turbo-frame id="users-feed"
+                 data-controller="infinite-scroll"
+                 data-infinite-scroll-card-selector-value=".user-card">
+      <%= render "feed_page", users: @users %>
+    </turbo-frame>
+  </div>
+<% end %>

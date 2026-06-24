@@ -1,0 +1,45 @@
+<aside class="border-b border-slate-800 bg-slate-950/80 p-4 lg:min-h-[calc(100vh-3.5rem)] lg:w-64 lg:border-b-0 lg:border-r" data-backoffice-sidebar="runtime">
+  <nav class="space-y-7" aria-label="Backoffice navigation">
+    <section data-backoffice-nav-group="platform">
+      <h2 class="px-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Platform</h2>
+      <div class="mt-2 space-y-1">
+        <% backoffice_platform_nav_items.each do |label, path| %>
+          <% selected = backoffice_selected_platform_path?(path) && (!respond_to?(:backoffice_context) || backoffice_context == :platform) %>
+          <%= link_to label, path,
+                class: "block rounded-md px-2.5 py-2 text-sm transition #{selected ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white'}" %>
+        <% end %>
+      </div>
+    </section>
+
+    <section data-backoffice-nav-group="products">
+      <h2 class="px-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Products</h2>
+      <div class="mt-2 space-y-1">
+        <% if backoffice_products.any? %>
+          <% backoffice_products.each do |product| %>
+            <% selected_product = backoffice_selected_product?(product) %>
+            <div>
+              <%= link_to product.label,
+                    backoffice_product_path(product),
+                    class: "block rounded-md px-2.5 py-2 text-sm transition #{selected_product ? 'bg-indigo-950/70 text-indigo-100' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white'}" %>
+
+              <% if selected_product %>
+                <div class="ml-3 mt-1 space-y-1 border-l border-slate-800 pl-3" data-backoffice-product-panels>
+                  <%= link_to "Overview",
+                        backoffice_product_path(product),
+                        class: "block rounded-md px-2 py-1.5 text-sm text-slate-300 transition hover:bg-slate-800/70 hover:text-white" %>
+                  <% Pave::Backoffice.registry.product_panels(product.key).each do |panel| %>
+                    <%= link_to panel.label,
+                          backoffice_product_panel_path(product, panel),
+                          class: "block rounded-md px-2 py-1.5 text-sm text-slate-300 transition hover:bg-slate-800/70 hover:text-white" %>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="px-2 py-2 text-sm text-slate-500">No products registered.</p>
+        <% end %>
+      </div>
+    </section>
+  </nav>
+</aside>

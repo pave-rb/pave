@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+echo "Smoke install is not yet implemented."
+echo "Future behavior:"
+echo "  1. Create a temp Rails app"
+echo "  2. Add Pavê gems via local path"
+echo "  3. Run pave:install generator"
+echo "  4. Run migrations and a health check"
+exit 1

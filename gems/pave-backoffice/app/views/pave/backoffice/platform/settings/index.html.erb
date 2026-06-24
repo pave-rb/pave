@@ -1,0 +1,98 @@
+<% content_for :title, "Settings" %>
+
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-white">Settings</h1>
+    <p class="mt-1 text-sm text-slate-400">Runtime configuration and encrypted credentials.</p>
+  </div>
+
+  <div class="rounded-lg border border-amber-700/60 bg-amber-950/40 p-4 text-sm text-amber-100">
+    You are editing Platform settings. Changes may affect every product using the configured module or plugin.
+  </div>
+
+  <% if @namespaces.empty? %>
+    <section class="rounded-lg border border-dashed border-slate-600 bg-slate-800/50 p-8 text-center">
+      <h2 class="text-xl font-semibold text-white">No settings schemas registered</h2>
+      <p class="mt-2 text-sm text-slate-400">Runtime modules can register settings with <code>Pave::Settings.define</code>.</p>
+    </section>
+  <% else %>
+    <div class="grid gap-6 lg:grid-cols-[16rem_1fr]">
+      <aside class="space-y-2">
+        <% @namespaces.each do |namespace| %>
+          <% selected = namespace.key == @selected_namespace %>
+          <%= link_to settings_path(namespace: namespace.key), class: "block rounded-lg border px-4 py-3 transition #{selected ? 'border-electric bg-electric/10' : 'border-slate-700 bg-slate-800 hover:bg-slate-700/70'}" do %>
+            <div class="font-medium text-white"><%= namespace.key.to_s.titleize %></div>
+            <div class="mt-1 text-xs text-slate-400"><%= namespace.required_count %> required, <%= namespace.missing_count %> missing</div>
+          <% end %>
+        <% end %>
+      </aside>
+
+      <div class="space-y-6">
+        <% @namespaces.each do |namespace| %>
+          <% next unless namespace.key == @selected_namespace %>
+
+          <section class="rounded-lg border border-slate-700 bg-slate-800">
+            <div class="border-b border-slate-700 p-5">
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 class="text-lg font-semibold text-white"><%= namespace.key.to_s.titleize %></h2>
+                  <p class="mt-1 text-sm text-slate-400">
+                    <%= namespace.required_count %> required keys, <%= namespace.missing_count %> missing.
+                  </p>
+                </div>
+                <div class="text-right text-xs text-slate-500">
+                  Last updated<br>
+                  <span class="text-slate-300"><%= namespace.last_updated ? (l(namespace.last_updated, format: :short) rescue namespace.last_updated.to_fs(:db)) : "Never" %></span>
+                </div>
+              </div>
+            </div>
+
+            <%= form_with url: settings_path, method: :patch, data: { turbo: false }, class: "space-y-5 p-5" do %>
+              <%= hidden_field_tag :namespace, namespace.key %>
+
+              <% namespace.fields.each do |field| %>
+                <% definition = field.definition %>
+                <% status = field.status %>
+                <% errors = @errors.fetch(definition.key, []) %>
+
+                <% if definition.encrypted %>
+                  <%= render "pave/backoffice/platform/settings/secret_field", definition: definition, status: status, errors: errors %>
+                <% else %>
+                  <div class="rounded-lg border border-slate-700 bg-slate-900/40 p-4">
+                    <div class="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <%= label_tag "settings_#{definition.key}", definition.key.to_s.humanize, class: "block text-sm font-medium text-white" %>
+                        <p class="mt-1 text-xs text-slate-500"><%= definition.type %><%= definition.required ? " - required" : " - optional" %></p>
+                      </div>
+                      <span class="rounded-full bg-slate-700 px-2 py-0.5 text-xs text-slate-300"><%= status.source.to_s.humanize %></span>
+                    </div>
+
+                    <% if definition.type == :boolean %>
+                      <%= select_tag "settings[#{definition.key}]",
+                            options_for_select([["True", "1"], ["False", "0"]], field.value.nil? ? nil : (field.value ? "1" : "0")),
+                            include_blank: !definition.required,
+                            id: "settings_#{definition.key}",
+                            class: "mt-3 w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-electric focus:outline-none focus:ring-1 focus:ring-electric" %>
+                    <% else %>
+                      <%= text_field_tag "settings[#{definition.key}]", field.value,
+                            id: "settings_#{definition.key}",
+                            class: "mt-3 w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-electric focus:outline-none focus:ring-1 focus:ring-electric" %>
+                    <% end %>
+
+                    <% if errors.any? %>
+                      <p class="mt-2 text-xs text-red-300"><%= errors.to_sentence %></p>
+                    <% end %>
+                  </div>
+                <% end %>
+              <% end %>
+
+              <div class="flex justify-end">
+                <%= submit_tag "Save #{namespace.key.to_s.titleize}", class: "rounded-md bg-electric px-4 py-2 text-sm font-medium text-white hover:bg-electric/90 transition cursor-pointer" %>
+              </div>
+            <% end %>
+          </section>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

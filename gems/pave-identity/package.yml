@@ -1,0 +1,6 @@
+enforce_dependencies: true
+
+dependencies:
+- gems/pave-core
+- gems/pave-tenancy
+- gems/pave-audit

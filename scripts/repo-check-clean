@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+failures=0
+
+if [ -d ".agents" ]; then
+  echo "FAIL: .agents/ directory exists in the working tree."
+  failures=$((failures + 1))
+fi
+
+# Files that are allowed to mention forbidden terms because they describe the cleanup itself.
+exclude_allowed_files=(
+  "--exclude=repo-check-clean"
+  "--exclude=AGENTS.md"
+  "--exclude=public_repository_checklist.md"
+  "--exclude=cli.rb"
+)
+
+anella_matches=$(grep -R "Anella\|anella\|ANELLA" . \
+  --exclude-dir=".git" \
+  --exclude-dir="log" \
+  --exclude-dir="tmp" \
+  --exclude-dir="vendor" \
+  --exclude-dir="public" \
+  --exclude-dir="db" \
+  --exclude-dir="node_modules" \
+  --exclude-dir="storage" \
+  --exclude-dir="coverage" \
+  "--exclude=*.png" \
+  "--exclude=*.jpg" \
+  "--exclude=*.gif" \
+  "--exclude=*.ico" \
+  "--exclude=*.svg" \
+  "--exclude=*.pdf" \
+  "${exclude_allowed_files[@]}" \
+  || true)
+
+if [ -n "$anella_matches" ]; then
+  echo "FAIL: Forbidden Anella references found:"
+  echo "$anella_matches"
+  failures=$((failures + 1))
+fi
+
+# Obvious provider-specific credential/token names that must never be checked in.
+credential_matches=$(grep -R \
+  -e "ASAAS_API_KEY" \
+  -e "asaas_api_key" \
+  -e "WHATSAPP_ACCESS_TOKEN" \
+  -e "whatsapp_access_token" \
+  -e "ASAAS_WEBHOOK_SECRET" \
+  -e "asaas_webhook_secret" \
+  --exclude-dir=".git" \
+  --exclude-dir="log" \
+  --exclude-dir="tmp" \
+  --exclude-dir="vendor" \
+  --exclude-dir="public" \
+  --exclude-dir="db" \
+  --exclude-dir="node_modules" \
+  --exclude-dir="storage" \
+  --exclude-dir="coverage" \
+  --exclude="repo-check-clean" \
+  . || true)
+
+if [ -n "$credential_matches" ]; then
+  echo "FAIL: Obvious provider credential/token names found:"
+  echo "$credential_matches"
+  failures=$((failures + 1))
+fi
+
+if [ "$failures" -gt 0 ]; then
+  echo "FAIL: repo-check-clean found $failures problem(s)."
+  exit 1
+fi
+
+echo "PASS: repo-check-clean found no private operator material or forbidden references."

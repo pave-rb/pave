@@ -1,0 +1,96 @@
+<% id = local_assigns.fetch(:id, "backoffice_drawer") %>
+<% title = local_assigns.fetch(:title, "Details") %>
+<% subtitle = local_assigns[:subtitle] %>
+<% turbo_frame = local_assigns[:turbo_frame] %>
+<% open = local_assigns.fetch(:open, true) %>
+<% close_path = local_assigns[:close_path] %>
+<% close_data = local_assigns.fetch(:close_data, {}) %>
+<% data = local_assigns.fetch(:data, {}).merge(backoffice_drawer: true) %>
+
+  <% if turbo_frame.present? %>
+  <%= turbo_frame_tag turbo_frame do %>
+    <div class="fixed inset-0 z-50 flex justify-end bg-slate-950/70 backdrop-blur-sm"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="<%= id %>-title"
+         data-controller="pave--backoffice--drawer"
+         data-action="click->pave--backoffice--drawer#backdropClose"
+         data-pave--backoffice--drawer-open-value="<%= open.to_s %>"
+         <% data.each do |key, value| %> data-<%= key.to_s.dasherize %>="<%= value %>"<% end %>>
+      <aside class="h-full w-full max-w-2xl overflow-y-auto border-l border-slate-700 bg-slate-900 shadow-2xl"
+             data-pave--backoffice--drawer-target="panel">
+        <div class="sticky top-0 z-10 border-b border-slate-700 bg-slate-900/95 px-6 py-4 backdrop-blur">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <% if local_assigns[:scope_label] %>
+                <p class="text-xs font-semibold uppercase tracking-wide text-amber-300"><%= scope_label %></p>
+              <% end %>
+              <h2 id="<%= id %>-title" class="mt-1 text-lg font-semibold text-white"><%= title %></h2>
+              <% if subtitle.present? %>
+                <p class="mt-1 text-sm text-slate-400"><%= subtitle %></p>
+              <% end %>
+            </div>
+
+            <% if close_path %>
+              <%= link_to "Close", close_path,
+                    data: close_data.merge({ action: "click->pave--backoffice--drawer#close" }.compact),
+                    class: "rounded-md border border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white" %>
+            <% else %>
+              <button type="button"
+                      data-action="pave--backoffice--drawer#close"
+                      class="rounded-md border border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">
+                Close
+              </button>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="space-y-6 px-6 py-6" data-pave--backoffice--drawer-target="content">
+          <%= yield %>
+        </div>
+      </aside>
+    </div>
+  <% end %>
+<% else %>
+  <div class="fixed inset-0 z-50 flex justify-end bg-slate-950/70 backdrop-blur-sm"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="<%= id %>-title"
+       data-controller="pave--backoffice--drawer"
+       data-action="click->pave--backoffice--drawer#backdropClose"
+       data-pave--backoffice--drawer-open-value="<%= open.to_s %>"
+       <% data.each do |key, value| %> data-<%= key.to_s.dasherize %>="<%= value %>"<% end %>>
+    <aside class="h-full w-full max-w-2xl overflow-y-auto border-l border-slate-700 bg-slate-900 shadow-2xl"
+           data-pave--backoffice--drawer-target="panel">
+      <div class="sticky top-0 z-10 border-b border-slate-700 bg-slate-900/95 px-6 py-4 backdrop-blur">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <% if local_assigns[:scope_label] %>
+              <p class="text-xs font-semibold uppercase tracking-wide text-amber-300"><%= scope_label %></p>
+            <% end %>
+            <h2 id="<%= id %>-title" class="mt-1 text-lg font-semibold text-white"><%= title %></h2>
+            <% if subtitle.present? %>
+              <p class="mt-1 text-sm text-slate-400"><%= subtitle %></p>
+            <% end %>
+          </div>
+
+          <% if close_path %>
+            <%= link_to "Close", close_path,
+                  data: close_data.merge({ action: "click->pave--backoffice--drawer#close" }.compact),
+                  class: "rounded-md border border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white" %>
+          <% else %>
+            <button type="button"
+                    data-action="pave--backoffice--drawer#close"
+                    class="rounded-md border border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">
+              Close
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="space-y-6 px-6 py-6" data-pave--backoffice--drawer-target="content">
+        <%= yield %>
+      </div>
+    </aside>
+  </div>
+<% end %>

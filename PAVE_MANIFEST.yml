@@ -1,0 +1,17 @@
+name: Pavê Runtime
+repo: pave-rb/pave
+type: runtime_source_monorepo
+gems:
+  - gems/pave
+  - gems/pave-core
+  - gems/pave-rails
+  - gems/pave-tenancy
+  - gems/pave-identity
+  - gems/pave-billing
+  - gems/pave-audit
+  - gems/pave-backoffice
+planned_gems:
+  - gems/pave-hotwire
+  - gems/pave-agent
+dummy_product: test/dummy/products/demo_scheduling
+version_source: gems/pave-core/lib/pave/version.rb

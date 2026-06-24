@@ -1,0 +1,9 @@
+<aside class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5" data-backoffice-status-rail>
+  <% backoffice_status_rail_items.each do |label, value, description| %>
+    <div class="rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-3">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500"><%= label %></p>
+      <p class="mt-1 text-xl font-semibold text-white"><%= value %></p>
+      <p class="mt-1 text-xs text-slate-500"><%= description %></p>
+    </div>
+  <% end %>
+</aside>

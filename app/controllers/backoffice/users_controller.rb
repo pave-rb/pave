@@ -1,0 +1,121 @@
+# frozen_string_literal: true
+
+module Backoffice
+  class UsersController < Backoffice::BaseController
+    include StripBlankPasswordParams
+
+    before_action :set_user, only: [ :show, :edit, :update, :destroy, :impersonate ]
+
+    def index
+      @users = User.includes(:space_membership, :space).order(:email)
+      if params[:space_id].present?
+        @space_filter = Space.find(params[:space_id])
+        @users = @users.joins(:space_membership).where(space_memberships: { space_id: params[:space_id] })
+      end
+      @users = @users.page(params[:page]).per(20)
+    end
+
+    def show
+    end
+
+    def new
+      @user = User.new
+      if params[:space_id].present?
+        space = Space.find_by(id: params[:space_id])
+        @user.space_id = space.id if space
+      end
+    end
+
+    def create
+      @user = User.new(user_params)
+      @user.space_id = params[:user][:space_id].presence if params.dig(:user, :space_id).present?
+      before_permissions = []
+
+      if @user.save
+        audit_permission_change(user: @user, before_permissions:)
+        redirect_to backoffice_user_path(@user)
+      else
+        render :new
+      end
+    end
+
+    def edit
+    end
+
+    def update
+      attrs = user_params_without_blank_passwords
+      attrs[:space_id] = params[:user][:space_id].presence if params.dig(:user, :space_id).present?
+      before_permissions = @user.permission_names
+
+      if @user.update(attrs)
+        audit_permission_change(user: @user, before_permissions:)
+        redirect_to backoffice_user_path(@user)
+      else
+        render :edit
+      end
+    end
+
+    def destroy
+      space_id = params[:space_id].presence
+      @user.destroy
+      redirect_to backoffice_users_path(space_id: space_id)
+    end
+
+    def impersonate
+      if @user.super_admin?
+        redirect_to backoffice_users_path, alert: t("backoffice.impersonation.cannot_impersonate_admin")
+        return
+      end
+
+      session[:impersonated_user_id] = @user.id
+      AuditLogs::EventLogger.call(
+        event_type: "auth.impersonation_started",
+        actor: real_current_user,
+        space: @user.space,
+        subject: @user,
+        request: request,
+        metadata: audit_context_metadata
+      )
+      Rails.logger.info(
+        "[IMPERSONATION_START] admin_id=#{real_current_user.id} " \
+        "admin_email=#{real_current_user.email} " \
+        "impersonated_id=#{@user.id} " \
+        "impersonated_email=#{@user.email} " \
+        "at=#{Time.current.iso8601}"
+      )
+      redirect_to root_path, notice: t("backoffice.impersonation.started", name: @user.name.presence || @user.email)
+    end
+
+    private
+
+    def set_user
+      @user = User.find(params[:id])
+    end
+
+    def user_params
+      # :role is a free-text display label (e.g. "Manager"), not an authorization field.
+      # system_role (admin privilege) is intentionally excluded.
+      params.require(:user).permit(:email, :name, :phone_number, :password, :password_confirmation, :role, permission_names_param: []) # brakeman:disable:PermitAttributes
+    end
+
+    def audit_permission_change(user:, before_permissions:)
+      after_permissions = user.reload.user_permissions.order(:permission).pluck(:permission)
+      added_permissions = after_permissions - before_permissions
+      removed_permissions = before_permissions - after_permissions
+      return if added_permissions.empty? && removed_permissions.empty?
+
+      AuditLogs::EventLogger.call(
+        event_type: "authorization.team_permissions_changed",
+        actor: real_current_user,
+        space: user.space,
+        subject: user,
+        request: request,
+        metadata: audit_context_metadata.merge(
+          added_permissions: added_permissions,
+          removed_permissions: removed_permissions,
+          surface: "backoffice_user_editor"
+        )
+      )
+    end
+  end
+end

@@ -1,0 +1,16 @@
+_fixture:
+  model_class: Billing::Product
+
+crm:
+  key: crm
+  name: CRM
+  description: CRM product
+  active: true
+  position: 1
+
+peti_vet:
+  key: peti_vet
+  name: peti.vet
+  description: Veterinary vertical product
+  active: true
+  position: 2

@@ -1,0 +1,63 @@
+<div class="space-y-6">
+  <%= render "shared/page_header", title: t("backoffice.users.new.title"), subtitle: t("backoffice.users.new.subtitle") %>
+
+  <%= render layout: "shared/card" do %>
+    <%= form_with model: [:platform, @user], class: "space-y-4" do |form| %>
+      <%= render "shared/error_messages", resource: @user %>
+
+      <div>
+        <%= form.label :email, class: form_label_classes %>
+        <%= form.email_field :email, required: true, class: form_input_classes %>
+      </div>
+
+      <div>
+        <%= form.label :name, class: form_label_classes %>
+        <%= form.text_field :name, class: form_input_classes %>
+      </div>
+
+      <div>
+        <%= form.label :phone_number, t("backoffice.users.new.phone_label"), class: form_label_classes %>
+        <%= form.telephone_field :phone_number, class: form_input_classes %>
+      </div>
+
+      <div>
+        <%= form.label :role, t("backoffice.users.form.role_label"), class: form_label_classes %>
+        <%= form.text_field :role, placeholder: t("backoffice.users.form.role_placeholder"), class: form_input_classes %>
+      </div>
+
+      <div>
+        <p class="text-sm font-medium text-slate-700"><%= t("backoffice.users.form.permissions_label") %></p>
+        <%= form.collection_check_boxes :permission_names_param,
+                                        PermissionService::ALLOWED_PERMISSIONS.excluding("own_space"),
+                                        :to_s,
+                                        ->(p) { t("backoffice.permissions.#{p}") } do |b| %>
+          <label class="mt-2 flex items-center gap-2 text-sm">
+            <%= b.check_box %>
+            <span><%= b.text %></span>
+          </label>
+        <% end %>
+      </div>
+
+      <div>
+        <%= form.label :space_id, t("backoffice.users.new.space_label"), class: form_label_classes %>
+        <%= form.collection_select :space_id, Space.order(:name), :id, :name, { include_blank: t("backoffice.users.new.no_space") }, class: form_input_classes %>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <%= form.label :password, t("backoffice.users.new.password_label"), class: form_label_classes %>
+          <%= form.password_field :password, class: form_input_classes("max-w-none") %>
+        </div>
+        <div>
+          <%= form.label :password_confirmation, t("backoffice.users.new.password_confirmation_label"), class: form_label_classes %>
+          <%= form.password_field :password_confirmation, class: form_input_classes("max-w-none") %>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-3">
+        <%= form.submit t("backoffice.users.new.submit"), class: button_classes(:primary), data: { turbo_submits_with: t("shared.submitting") } %>
+        <%= link_to t("backoffice.users.new.back"), backoffice_users_path(space_id: params[:space_id].presence), class: button_classes(:secondary) %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

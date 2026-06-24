@@ -1,0 +1,41 @@
+<div class="min-h-screen flex items-center justify-center">
+  <div class="max-w-md w-full card-solid p-8">
+    <h2 class="font-display text-2xl font-extrabold text-deep tracking-tight text-center mb-2">
+      <%= t("devise.passwords.edit.title") %>
+    </h2>
+
+    <p class="mb-6 text-center text-sm text-slate-600">
+      <%= t("devise.passwords.edit.subtitle") %>
+    </p>
+
+    <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+      <%= f.hidden_field :reset_password_token %>
+
+      <div class="mb-4">
+        <%= f.label :password, t("devise.passwords.edit.password"), class: form_label_classes %>
+        <% if @minimum_password_length %>
+          <p class="mb-1.5 text-xs text-slate-500">
+            <%= t("devise.passwords.edit.minimum_length", count: @minimum_password_length) %>
+          </p>
+        <% end %>
+        <%= f.password_field :password, autofocus: true, autocomplete: "new-password", class: form_input_classes %>
+      </div>
+
+      <div class="mb-6">
+        <%= f.label :password_confirmation, t("devise.passwords.edit.password_confirmation"), class: form_label_classes %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: form_input_classes %>
+      </div>
+
+      <div>
+        <%= f.submit t("devise.passwords.edit.submit"),
+                     class: "#{button_classes(:primary)} w-full",
+                     data: { turbo_submits_with: t("devise.passwords.change_loading") } %>
+      </div>
+    <% end %>
+
+    <div class="mt-6 flex flex-col items-center gap-2 text-center text-sm text-slate-600">
+      <%= render "devise/shared/links" %>
+    </div>
+  </div>
+</div>

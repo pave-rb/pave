@@ -1,0 +1,25 @@
+<div class="space-y-6">
+  <%= render "shared/page_header", title: t("backoffice.spaces.edit.title"), subtitle: t("backoffice.spaces.edit.subtitle") %>
+
+  <%= render layout: "shared/card" do %>
+    <%= form_with model: [:platform, @space], class: "space-y-4" do |form| %>
+      <%= render "shared/error_messages", resource: @space %>
+
+      <div>
+        <%= form.label :name, t("backoffice.spaces.edit.name_label"), class: form_label_classes %>
+        <%= form.text_field :name, required: true, class: form_input_classes %>
+      </div>
+
+      <div>
+        <%= form.label :timezone, t("backoffice.spaces.edit.timezone_label"), class: form_label_classes %>
+        <%= form.text_field :timezone, class: form_input_classes %>
+      </div>
+
+      <div class="flex flex-wrap gap-3">
+        <%= form.submit t("backoffice.spaces.edit.submit"), class: button_classes(:primary), data: { turbo_submits_with: t("shared.submitting") } %>
+        <%= link_to t("backoffice.spaces.edit.back"), backoffice_space_path(@space), class: button_classes(:secondary) %>
+        <%= link_to t("backoffice.spaces.edit.all_spaces"), backoffice_spaces_path, class: button_classes(:secondary) %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,8 @@
+enforce_dependencies: true
+enforce_privacy: true
+dependencies:
+  - gems/pave-core
+  - gems/pave-tenancy
+  - gems/pave-identity
+  - gems/pave-audit
+  - gems/pave-backoffice

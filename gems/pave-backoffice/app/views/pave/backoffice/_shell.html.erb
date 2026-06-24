@@ -1,0 +1,30 @@
+<div data-backoffice-shell="runtime">
+  <%= render "pave/backoffice/shell/top_bar" %>
+
+  <div class="lg:flex">
+    <%= render "pave/backoffice/shell/sidebar" %>
+
+    <main class="w-full min-w-0 px-4 py-8 lg:px-8">
+      <div class="mx-auto max-w-6xl space-y-6">
+        <% if flash.any? %>
+          <div class="space-y-2" data-backoffice-flash="runtime">
+            <% flash.each do |type, message| %>
+              <% tone = type.to_s == "alert" ? "border-red-400/40 bg-red-950/40 text-red-100" : "border-emerald-400/40 bg-emerald-950/40 text-emerald-100" %>
+              <div class="rounded-md border px-3 py-2 text-sm <%= tone %>">
+                <%= message %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <div class="space-y-3">
+          <%= render "pave/backoffice/shell/breadcrumbs" %>
+          <%= render "pave/backoffice/shell/page_header" %>
+          <%= render "pave/backoffice/shell/status_rail" %>
+        </div>
+
+        <%= yield %>
+      </div>
+    </main>
+  </div>
+</div>
