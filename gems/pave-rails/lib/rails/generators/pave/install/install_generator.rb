@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
-module Pave
-  module Rails
-    module Generators
+module Rails
+  module Generators
+    module Pave
       class InstallGenerator < ::Rails::Generators::Base
+        namespace "pave:install"
         desc "Install Pav\u00ea into the host application"
         source_root File.expand_path("templates", __dir__)
 

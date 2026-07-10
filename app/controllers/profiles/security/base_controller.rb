@@ -14,7 +14,7 @@ module Profiles
 
       def load_security_overview
         @identities = @user.user_identities.order(:provider)
-        @passkeys = @user.user_passkeys.order(created_at: :desc)
+        @passkeys = @user.user_passkeys.where(rp_id: current_webauthn_rp_id).order(created_at: :desc)
         @active_recovery_codes_count = @user.user_recovery_codes.active.count
       end
     end

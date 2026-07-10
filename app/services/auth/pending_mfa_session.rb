@@ -7,7 +7,9 @@ module Auth
     VERIFIED_USER_ID_KEY = "auth.mfa_verified_user_id"
     PENDING_TOTP_SECRET_KEY = "auth.pending_totp_secret"
     PASSKEY_REGISTRATION_CHALLENGE_KEY = "auth.passkey_registration_challenge"
+    PASSKEY_REGISTRATION_RP_ID_KEY = "auth.passkey_registration_rp_id"
     PASSKEY_AUTHENTICATION_CHALLENGE_KEY = "auth.passkey_authentication_challenge"
+    PASSKEY_AUTHENTICATION_RP_ID_KEY = "auth.passkey_authentication_rp_id"
     RECOVERY_CODES_KEY = "auth.pending_recovery_codes"
     EXPIRY = 10.minutes
     MAX_ATTEMPTS = 5
@@ -98,28 +100,40 @@ module Auth
       session.delete(RECOVERY_CODES_KEY)
     end
 
-    def self.store_passkey_registration_challenge(session:, challenge:)
+    def self.store_passkey_registration_challenge(session:, challenge:, rp_id: nil)
       session[PASSKEY_REGISTRATION_CHALLENGE_KEY] = challenge
+      session[PASSKEY_REGISTRATION_RP_ID_KEY] = rp_id if rp_id.present?
     end
 
     def self.passkey_registration_challenge(session:)
       session[PASSKEY_REGISTRATION_CHALLENGE_KEY]
     end
 
-    def self.clear_passkey_registration_challenge(session:)
-      session.delete(PASSKEY_REGISTRATION_CHALLENGE_KEY)
+    def self.passkey_registration_rp_id(session:)
+      session[PASSKEY_REGISTRATION_RP_ID_KEY]
     end
 
-    def self.store_passkey_authentication_challenge(session:, challenge:)
+    def self.clear_passkey_registration_challenge(session:)
+      session.delete(PASSKEY_REGISTRATION_CHALLENGE_KEY)
+      session.delete(PASSKEY_REGISTRATION_RP_ID_KEY)
+    end
+
+    def self.store_passkey_authentication_challenge(session:, challenge:, rp_id: nil)
       session[PASSKEY_AUTHENTICATION_CHALLENGE_KEY] = challenge
+      session[PASSKEY_AUTHENTICATION_RP_ID_KEY] = rp_id if rp_id.present?
     end
 
     def self.passkey_authentication_challenge(session:)
       session[PASSKEY_AUTHENTICATION_CHALLENGE_KEY]
     end
 
+    def self.passkey_authentication_rp_id(session:)
+      session[PASSKEY_AUTHENTICATION_RP_ID_KEY]
+    end
+
     def self.clear_passkey_authentication_challenge(session:)
       session.delete(PASSKEY_AUTHENTICATION_CHALLENGE_KEY)
+      session.delete(PASSKEY_AUTHENTICATION_RP_ID_KEY)
     end
 
     def self.clear(session:)

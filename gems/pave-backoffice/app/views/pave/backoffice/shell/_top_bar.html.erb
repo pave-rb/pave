@@ -18,6 +18,10 @@
         <span class="text-slate-400" data-backoffice-admin-identity>
           Super admin · <span class="text-slate-200"><%= current_admin.email %></span>
         </span>
+
+        <%= link_to "Profile",
+              pave_backoffice.edit_profile_path,
+              class: "rounded-md border border-slate-700 px-3 py-1.5 text-sm transition #{request.path.start_with?(pave_backoffice.profile_path) ? 'bg-slate-800 text-white' : 'text-slate-200 hover:bg-slate-800 hover:text-white'}" %>
       <% end %>
 
       <%= button_to "Sign out of backoffice",

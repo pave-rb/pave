@@ -1,0 +1,30 @@
+<div data-controller="pave--backoffice--passkey"
+     data-pave--backoffice--passkey-options-url-value="<%= options_url %>"
+     data-pave--backoffice--passkey-submit-url-value="<%= submit_url %>"
+     data-pave--backoffice--passkey-unsupported-message-value="<%= t('mfa.passkeys.errors.unsupported_browser') %>"
+     data-pave--backoffice--passkey-generic-error-message-value="<%= t('mfa.passkeys.errors.generic') %>"
+     data-pave--backoffice--passkey-label-required-message-value="<%= t('mfa.passkeys.errors.label_blank') %>"
+     class="space-y-4 rounded-3xl border border-slate-200 bg-white/90 p-5 shadow-sm">
+  <div>
+    <p class="text-xs font-semibold uppercase tracking-wide text-slate-500"><%= title %></p>
+    <p class="mt-2 text-sm text-slate-600"><%= subtitle %></p>
+  </div>
+
+  <% if show_label %>
+    <div>
+      <%= label_tag :passkey_label, t("mfa.passkeys.label"), class: "block text-sm font-medium text-slate-700" %>
+      <%= text_field_tag :passkey_label, nil, class: "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 shadow-sm placeholder:text-slate-400 focus:border-electric focus:outline-none focus:ring-1 focus:ring-electric", placeholder: t("mfa.passkeys.label_placeholder"), data: { "pave--backoffice--passkey-target": "label" } %>
+    </div>
+  <% end %>
+
+  <div data-pave--backoffice--passkey-target="error" class="hidden rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"></div>
+
+  <button type="button"
+          data-action="pave--backoffice--passkey#<%= action_name %>"
+          data-pave--backoffice--passkey-target="button"
+          data-register-loading-text="<%= t('mfa.passkeys.register_loading') %>"
+          data-authenticate-loading-text="<%= t('mfa.passkeys.authenticate_loading') %>"
+          class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-electric focus:ring-offset-2">
+    <%= button_text %>
+  </button>
+</div>

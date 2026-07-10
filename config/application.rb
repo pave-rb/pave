@@ -38,6 +38,11 @@ module AppointmentScheduler
     else
       Array(app_credentials[:base_urls]).presence
     end
+    config.x.app.admin_hosts = if ENV["ADMIN_HOSTS"].present?
+      ENV["ADMIN_HOSTS"].split(",").map(&:strip).reject(&:blank?)
+    else
+      %w[admin.localhost]
+    end
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.

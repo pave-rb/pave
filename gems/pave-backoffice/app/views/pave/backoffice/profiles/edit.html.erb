@@ -1,0 +1,55 @@
+<% content_for :title, "Super Admin Profile" %>
+<% content_for :page_title, "Super Admin Profile" %>
+<% content_for :page_description, "Manage your platform identity. Email is locked and can only be changed through trusted infrastructure access." %>
+
+<div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+  <section class="rounded-lg border border-slate-800 bg-slate-900/70 p-5">
+    <div class="mb-5">
+      <h2 class="text-lg font-semibold text-white">Identity</h2>
+      <p class="mt-1 text-sm text-slate-400">Keep the display name used in backoffice activity clear and recognizable.</p>
+    </div>
+
+    <%= form_with model: @user, url: profile_path, method: :patch, class: "space-y-5" do |form| %>
+      <% if @user.errors.any? %>
+        <div class="rounded-md border border-red-400/40 bg-red-950/40 px-3 py-2 text-sm text-red-100">
+          <p class="font-medium">We could not save this profile.</p>
+          <ul class="mt-2 list-disc space-y-1 pl-5">
+            <% @user.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.label :name, class: "block text-sm font-medium text-slate-200" %>
+        <%= form.text_field :name, class: "mt-1 block w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-electric focus:outline-none focus:ring-1 focus:ring-electric" %>
+      </div>
+
+      <div>
+        <%= label_tag :locked_email, User.human_attribute_name(:email), class: "block text-sm font-medium text-slate-200" %>
+        <%= email_field_tag :locked_email, @user.email, disabled: true, readonly: true, class: "mt-1 block w-full cursor-not-allowed rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-400" %>
+        <p class="mt-2 text-xs leading-5 text-slate-500">Email changes are locked for super admins. Update it only through a trusted server task after direct production infrastructure access.</p>
+      </div>
+
+      <div class="flex flex-wrap gap-3">
+        <%= form.submit "Save", class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-slate-200" %>
+        <%= link_to "Security settings", profile_security_path, class: "rounded-md border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800 hover:text-white" %>
+      </div>
+    <% end %>
+  </section>
+
+  <aside class="space-y-4">
+    <div class="rounded-lg border border-slate-800 bg-slate-900/70 p-5">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Security posture</p>
+      <p class="mt-2 text-2xl font-semibold text-white"><%= @user.mfa_enabled? ? t("profiles.security.status.enabled") : t("profiles.security.status.disabled") %></p>
+      <p class="mt-2 text-sm text-slate-400">Super admin MFA is required. Keep at least one recovery path available.</p>
+    </div>
+
+    <div class="rounded-lg border border-slate-800 bg-slate-900/70 p-5">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Account email</p>
+      <p class="mt-2 break-all text-sm font-medium text-white"><%= @user.email %></p>
+      <p class="mt-2 text-xs leading-5 text-slate-500">Locked in this UI to reduce account takeover blast radius.</p>
+    </div>
+  </aside>
+</div>

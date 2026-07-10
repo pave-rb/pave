@@ -1,0 +1,17 @@
+<% content_for :title, t("mfa.recovery_codes.title") %>
+<% content_for :page_title, t("mfa.recovery_codes.title") %>
+<% content_for :page_description, t("mfa.recovery_codes.subtitle") %>
+
+<div class="rounded-lg border border-slate-800 bg-slate-900/70 p-5">
+  <div class="rounded-md border border-amber-400/40 bg-amber-950/40 px-3 py-2 text-sm text-amber-100"><%= t("mfa.recovery_codes.warning") %></div>
+
+  <div class="mt-6 grid gap-3 sm:grid-cols-2">
+    <% @recovery_codes.each do |code| %>
+      <div class="rounded-lg border border-slate-800 bg-slate-950/70 px-4 py-3 font-mono text-sm text-white"><%= code %></div>
+    <% end %>
+  </div>
+
+  <%= form_with url: acknowledge_profile_security_recovery_codes_path, class: "mt-6" do |form| %>
+    <%= form.submit t("mfa.recovery_codes.submit"), class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-slate-200" %>
+  <% end %>
+</div>

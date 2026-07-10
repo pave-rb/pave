@@ -6,7 +6,11 @@ module Profiles
       before_action :set_passkey, only: :destroy
 
       def registration_options
-        options = Auth::Mfa::Webauthn::GenerateRegistrationOptions.call(user: @user, session: session)
+        options = Auth::Mfa::Webauthn::GenerateRegistrationOptions.call(
+          user: @user,
+          session: session,
+          webauthn: current_webauthn
+        )
         render json: options
       end
 
@@ -15,7 +19,8 @@ module Profiles
           user: @user,
           session: session,
           credential: credential_payload,
-          label: passkey_label
+          label: passkey_label,
+          webauthn: current_webauthn
         )
 
         unless result.success?
@@ -69,7 +74,7 @@ module Profiles
       private
 
       def set_passkey
-        @passkey = @user.user_passkeys.find(params[:id])
+        @passkey = @user.user_passkeys.where(rp_id: current_webauthn_rp_id).find(params[:id])
       end
 
       def credential_payload

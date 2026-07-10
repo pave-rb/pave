@@ -1,0 +1,134 @@
+<% content_for :title, "Super Admin Security" %>
+<% content_for :page_title, "Super Admin Security" %>
+<% content_for :page_description, "Manage password, MFA, passkeys, and recovery options for your platform account." %>
+
+<% active_methods = [] %>
+<% active_methods << t("profiles.security.status.authenticator_app") if @user.totp_enabled? %>
+<% active_methods << t("profiles.security.status.passkeys_count", count: @passkeys.count) if @passkeys.any? %>
+
+<div class="space-y-6">
+  <div class="grid gap-3 md:grid-cols-4">
+    <div class="rounded-lg border border-slate-800 bg-slate-900/70 px-4 py-3">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500"><%= t("profiles.security.status.mfa") %></p>
+      <p class="mt-1 text-lg font-semibold text-white"><%= @user.mfa_enabled? ? t("profiles.security.status.enabled") : t("profiles.security.status.disabled") %></p>
+    </div>
+    <div class="rounded-lg border border-slate-800 bg-slate-900/70 px-4 py-3">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500"><%= t("profiles.security.status.policy") %></p>
+      <p class="mt-1 text-lg font-semibold text-white"><%= t("profiles.security.status.required") %></p>
+    </div>
+    <div class="rounded-lg border border-slate-800 bg-slate-900/70 px-4 py-3">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500"><%= t("profiles.security.status.active_methods") %></p>
+      <p class="mt-1 text-lg font-semibold text-white"><%= active_methods.presence&.join(" · ") || t("profiles.security.status.none") %></p>
+    </div>
+    <div class="rounded-lg border border-slate-800 bg-slate-900/70 px-4 py-3">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500"><%= t("profiles.security.status.recovery_codes") %></p>
+      <p class="mt-1 text-lg font-semibold text-white"><%= @user.mfa_enabled? ? t("profiles.security.status.recovery_codes_count", count: @active_recovery_codes_count) : t("profiles.security.status.pending") %></p>
+    </div>
+  </div>
+
+  <section class="rounded-lg border border-slate-800 bg-slate-900/70 p-5">
+    <h2 class="text-lg font-semibold text-white"><%= t("profiles.security.password.title") %></h2>
+    <p class="mt-1 text-sm text-slate-400"><%= t("profiles.security.password.description") %></p>
+
+    <%= form_with model: @user, url: profile_security_password_path, method: :patch, class: "mt-5 space-y-4" do |form| %>
+      <% if @user.errors.any? %>
+        <div class="rounded-md border border-red-400/40 bg-red-950/40 px-3 py-2 text-sm text-red-100">
+          <ul class="list-disc space-y-1 pl-5">
+            <% @user.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <%= form.label :current_password, t("profiles.security.password.current_password_label"), class: "block text-sm font-medium text-slate-200" %>
+          <%= form.password_field :current_password, autocomplete: "current-password", class: "mt-1 block w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-electric focus:outline-none focus:ring-1 focus:ring-electric" %>
+        </div>
+        <div></div>
+        <div>
+          <%= form.label :password, t("profiles.security.password.password_label"), class: "block text-sm font-medium text-slate-200" %>
+          <%= form.password_field :password, autocomplete: "new-password", class: "mt-1 block w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-electric focus:outline-none focus:ring-1 focus:ring-electric" %>
+        </div>
+        <div>
+          <%= form.label :password_confirmation, t("profiles.security.password.password_confirmation_label"), class: "block text-sm font-medium text-slate-200" %>
+          <%= form.password_field :password_confirmation, autocomplete: "new-password", class: "mt-1 block w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-electric focus:outline-none focus:ring-1 focus:ring-electric" %>
+        </div>
+      </div>
+
+      <%= form.submit t("profiles.security.password.submit"), class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-slate-200" %>
+    <% end %>
+  </section>
+
+  <section class="rounded-lg border border-slate-800 bg-slate-900/70 p-5">
+    <h2 class="text-lg font-semibold text-white"><%= t("profiles.security.passkeys.title") %></h2>
+    <p class="mt-1 text-sm text-slate-400"><%= t("profiles.security.passkeys.description") %></p>
+
+    <div class="mt-5 space-y-4">
+      <%= render "pave/backoffice/mfa/passkey_panel",
+            title: t("mfa.passkeys.register_title"),
+            subtitle: t("mfa.passkeys.register_subtitle"),
+            button_text: t("mfa.passkeys.register"),
+            action_name: :register,
+            show_label: true,
+            options_url: registration_options_profile_security_passkeys_path,
+            submit_url: profile_security_passkeys_path %>
+
+      <% if @passkeys.any? %>
+        <div class="space-y-3">
+          <% @passkeys.each do |passkey| %>
+            <% detail_parts = [] %>
+            <% detail_parts << (passkey.platform_authenticator? ? t("profiles.security.passkeys.platform_authenticator") : t("profiles.security.passkeys.cross_platform_authenticator")) %>
+            <% detail_parts << t("profiles.security.passkeys.created_at", at: l(passkey.created_at, format: :short)) %>
+            <% detail_parts << (passkey.last_used_at.present? ? t("profiles.security.passkeys.last_used_at", at: l(passkey.last_used_at, format: :short)) : t("profiles.security.passkeys.never_used")) %>
+            <div class="flex flex-col gap-3 rounded-lg border border-slate-800 bg-slate-950/70 p-4 md:flex-row md:items-start md:justify-between">
+              <div>
+                <p class="text-sm font-semibold text-white"><%= passkey.label %></p>
+                <p class="mt-1 text-sm text-slate-400"><%= detail_parts.join(" · ") %></p>
+              </div>
+              <%= button_to t("profiles.security.passkeys.remove"), profile_security_passkey_path(passkey), method: :delete, class: "rounded-md border border-red-400/50 px-3 py-2 text-sm font-medium text-red-100 transition hover:bg-red-950/60", data: { turbo_confirm: t("profiles.security.passkeys.remove_confirm") } %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="rounded-lg border border-slate-800 bg-slate-950/70 p-4 text-sm text-slate-400"><%= t("profiles.security.passkeys.empty") %></p>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="rounded-lg border border-slate-800 bg-slate-900/70 p-5">
+    <h2 class="text-lg font-semibold text-white"><%= t("profiles.security.totp.title") %></h2>
+    <p class="mt-1 text-sm text-slate-400"><%= t("profiles.security.totp.description") %></p>
+
+    <div class="mt-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <p class="text-sm font-semibold text-white"><%= @user.totp_enabled? ? t("profiles.security.totp.enabled_status") : t("profiles.security.totp.disabled_status") %></p>
+        <% if @user.totp_last_verified_at.present? %>
+          <p class="mt-1 text-sm text-slate-400"><%= t("profiles.security.totp.last_verified_at", at: l(@user.totp_last_verified_at, format: :short)) %></p>
+        <% end %>
+      </div>
+
+      <% if @user.totp_enabled? %>
+        <%= button_to t("profiles.security.totp.disable"), profile_security_totp_enrollment_path, method: :delete, class: "rounded-md border border-red-400/50 px-4 py-2 text-sm font-medium text-red-100 transition hover:bg-red-950/60", data: { turbo_confirm: t("profiles.security.totp.disable_confirm") } %>
+      <% else %>
+        <%= link_to t("profiles.security.totp.setup"), new_profile_security_totp_enrollment_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-slate-200" %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="rounded-lg border border-slate-800 bg-slate-900/70 p-5">
+    <h2 class="text-lg font-semibold text-white"><%= t("profiles.security.recovery_codes.title") %></h2>
+    <p class="mt-1 text-sm text-slate-400"><%= t("profiles.security.recovery_codes.description") %></p>
+
+    <% if @user.mfa_enabled? %>
+      <div class="mt-5 space-y-4">
+        <div class="rounded-md border border-amber-400/40 bg-amber-950/40 px-3 py-2 text-sm text-amber-100"><%= t("profiles.security.recovery_codes.warning") %></div>
+        <p class="text-sm text-slate-300"><%= t("profiles.security.recovery_codes.available", count: @active_recovery_codes_count) %></p>
+        <%= button_to t("profiles.security.recovery_codes.regenerate"), regenerate_profile_security_recovery_codes_path, method: :post, class: "rounded-md border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800 hover:text-white", data: { turbo_confirm: t("profiles.security.recovery_codes.regenerate_confirm") } %>
+      </div>
+    <% else %>
+      <p class="mt-5 rounded-lg border border-slate-800 bg-slate-950/70 p-4 text-sm text-slate-400"><%= t("profiles.security.recovery_codes.unavailable") %></p>
+    <% end %>
+  </section>
+</div>

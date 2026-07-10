@@ -22,4 +22,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "pave-core", "= #{Pave::Identity::VERSION}"
   spec.add_dependency "pave-tenancy", "= #{Pave::Identity::VERSION}"
   spec.add_dependency "pave-audit", "= #{Pave::Identity::VERSION}"
+  spec.add_dependency "webauthn"
 end

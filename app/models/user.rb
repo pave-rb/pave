@@ -97,8 +97,10 @@ class User < ApplicationRecord
     super_admin? && !mfa_enabled?
   end
 
-  def passkeys_enabled?
-    user_passkeys.exists?
+  def passkeys_enabled?(rp_id: nil)
+    scope = user_passkeys
+    scope = scope.where(rp_id: rp_id) if rp_id.present?
+    scope.exists?
   end
 
   def totp_enabled?

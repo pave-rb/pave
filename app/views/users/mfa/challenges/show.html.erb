@@ -13,7 +13,7 @@
       </div>
     <% end %>
 
-    <% if @mfa_user.passkeys_enabled? %>
+    <% if @passkeys_enabled %>
       <%= render "users/mfa/passkey_panel",
                  title: t("mfa.passkeys.authenticate_title"),
                  subtitle: t("mfa.passkeys.authenticate_subtitle"),

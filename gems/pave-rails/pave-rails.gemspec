@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.description = "Rails engine and Railtie that wires Pavê runtime into a host Rails app."
   spec.license = "MIT"
   spec.homepage = "https://github.com/pave-rb/pave"
-  spec.files = Dir["lib/**/*.rb", "README.md"]
+  spec.files = Dir["lib/**/*.{rb,yml,md}", "README.md"]
   spec.require_paths = [ "lib" ]
   spec.required_ruby_version = ">= 3.4.0"
 

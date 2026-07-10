@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_10_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -27,14 +27,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["completed_at"], name: "index_account_deletion_requests_on_completed_at"
-    t.index ["cpf_cnpj_fingerprint"], name: "index_account_deletion_requests_on_cpf_cnpj_fingerprint"
-    t.index ["email_fingerprint"], name: "index_account_deletion_requests_on_email_fingerprint"
-    t.index ["name_fingerprint"], name: "index_account_deletion_requests_on_name_fingerprint"
-    t.index ["phone_fingerprint"], name: "index_account_deletion_requests_on_phone_fingerprint"
-    t.index ["status", "scheduled_for"], name: "index_account_deletion_requests_on_status_and_scheduled_for"
-    t.index ["user_id"], name: "index_account_deletion_requests_on_pending_user_id", unique: true, where: "(status = 0)"
-    t.index ["user_id"], name: "index_account_deletion_requests_on_user_id"
+    t.index [ "completed_at" ], name: "index_account_deletion_requests_on_completed_at"
+    t.index [ "cpf_cnpj_fingerprint" ], name: "index_account_deletion_requests_on_cpf_cnpj_fingerprint"
+    t.index [ "email_fingerprint" ], name: "index_account_deletion_requests_on_email_fingerprint"
+    t.index [ "name_fingerprint" ], name: "index_account_deletion_requests_on_name_fingerprint"
+    t.index [ "phone_fingerprint" ], name: "index_account_deletion_requests_on_phone_fingerprint"
+    t.index [ "status", "scheduled_for" ], name: "index_account_deletion_requests_on_status_and_scheduled_for"
+    t.index [ "user_id" ], name: "index_account_deletion_requests_on_pending_user_id", unique: true, where: "(status = 0)"
+    t.index [ "user_id" ], name: "index_account_deletion_requests_on_user_id"
   end
 
   create_table "anella_space_profiles", force: :cascade do |t|
@@ -46,7 +46,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "business_type"
     t.integer "cancellation_min_hours_before"
     t.datetime "completed_onboarding_at"
-    t.integer "confirmation_lead_hours", default: [24, 2], null: false, array: true
+    t.integer "confirmation_lead_hours", default: [ 24, 2 ], null: false, array: true
     t.time "confirmation_quiet_hours_end"
     t.time "confirmation_quiet_hours_start"
     t.datetime "created_at", null: false
@@ -65,7 +65,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.integer "slot_duration_minutes", default: 30, null: false
     t.bigint "space_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["space_id"], name: "index_anella_space_profiles_on_space_id"
+    t.index [ "space_id" ], name: "index_anella_space_profiles_on_space_id"
   end
 
   create_table "appointment_events", force: :cascade do |t|
@@ -78,10 +78,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "idempotency_key", null: false
     t.jsonb "metadata", default: {}, null: false
     t.bigint "space_id", null: false
-    t.index ["appointment_id"], name: "index_appointment_events_on_appointment_id"
-    t.index ["idempotency_key"], name: "index_appointment_events_on_idempotency_key", unique: true
-    t.index ["space_id", "appointment_id", "created_at"], name: "idx_appt_events_space_appointment_created_at"
-    t.index ["space_id"], name: "index_appointment_events_on_space_id"
+    t.index [ "appointment_id" ], name: "index_appointment_events_on_appointment_id"
+    t.index [ "idempotency_key" ], name: "index_appointment_events_on_idempotency_key", unique: true
+    t.index [ "space_id", "appointment_id", "created_at" ], name: "idx_appt_events_space_appointment_created_at"
+    t.index [ "space_id" ], name: "index_appointment_events_on_space_id"
   end
 
   create_table "appointment_reminders", force: :cascade do |t|
@@ -100,11 +100,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "template_version"
     t.datetime "updated_at", null: false
     t.string "wamid"
-    t.index ["appointment_id", "kind"], name: "idx_reminders_one_live_per_kind", unique: true, where: "(status = ANY (ARRAY[0, 1, 2, 3]))"
-    t.index ["appointment_id"], name: "index_appointment_reminders_on_appointment_id"
-    t.index ["space_id"], name: "index_appointment_reminders_on_space_id"
-    t.index ["status", "fire_at"], name: "idx_reminders_dispatcher_scan"
-    t.index ["wamid"], name: "index_appointment_reminders_on_wamid", unique: true, where: "(wamid IS NOT NULL)"
+    t.index [ "appointment_id", "kind" ], name: "idx_reminders_one_live_per_kind", unique: true, where: "(status = ANY (ARRAY[0, 1, 2, 3]))"
+    t.index [ "appointment_id" ], name: "index_appointment_reminders_on_appointment_id"
+    t.index [ "space_id" ], name: "index_appointment_reminders_on_space_id"
+    t.index [ "status", "fire_at" ], name: "idx_reminders_dispatcher_scan"
+    t.index [ "wamid" ], name: "index_appointment_reminders_on_wamid", unique: true, where: "(wamid IS NOT NULL)"
   end
 
   create_table "appointments", force: :cascade do |t|
@@ -126,16 +126,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.bigint "space_id", null: false
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
-    t.index ["bookable_resource_id"], name: "index_appointments_on_bookable_resource_id"
-    t.index ["customer_id", "scheduled_at"], name: "index_appointments_on_client_scheduled_at"
-    t.index ["customer_id"], name: "index_appointments_on_customer_id"
-    t.index ["discarded_at"], name: "index_appointments_on_discarded_at"
-    t.index ["space_id", "appointment_mode"], name: "index_appointments_on_space_id_and_appointment_mode"
-    t.index ["space_id", "bookable_resource_id"], name: "index_appointments_on_space_id_and_bookable_resource_id"
-    t.index ["space_id", "confirmation_state"], name: "index_appointments_on_space_id_and_confirmation_state"
-    t.index ["space_id", "scheduled_at"], name: "index_appointments_unique_active_slot", unique: true, where: "((status = ANY (ARRAY[0, 1, 3])) AND (scheduled_at IS NOT NULL) AND (discarded_at IS NULL))"
-    t.index ["space_id", "status", "scheduled_at"], name: "index_appointments_on_space_status_scheduled_at"
-    t.index ["space_id"], name: "index_appointments_on_space_id"
+    t.index [ "bookable_resource_id" ], name: "index_appointments_on_bookable_resource_id"
+    t.index [ "customer_id", "scheduled_at" ], name: "index_appointments_on_client_scheduled_at"
+    t.index [ "customer_id" ], name: "index_appointments_on_customer_id"
+    t.index [ "discarded_at" ], name: "index_appointments_on_discarded_at"
+    t.index [ "space_id", "appointment_mode" ], name: "index_appointments_on_space_id_and_appointment_mode"
+    t.index [ "space_id", "bookable_resource_id" ], name: "index_appointments_on_space_id_and_bookable_resource_id"
+    t.index [ "space_id", "confirmation_state" ], name: "index_appointments_on_space_id_and_confirmation_state"
+    t.index [ "space_id", "scheduled_at" ], name: "index_appointments_unique_active_slot", unique: true, where: "((status = ANY (ARRAY[0, 1, 3])) AND (scheduled_at IS NOT NULL) AND (discarded_at IS NULL))"
+    t.index [ "space_id", "status", "scheduled_at" ], name: "index_appointments_on_space_status_scheduled_at"
+    t.index [ "space_id" ], name: "index_appointments_on_space_id"
   end
 
   create_table "audit_logs", force: :cascade do |t|
@@ -155,18 +155,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "subject_name_fingerprint"
     t.string "subject_phone_fingerprint"
     t.string "subject_type"
-    t.index ["actor_user_id", "created_at"], name: "index_audit_logs_on_actor_user_id_and_created_at"
-    t.index ["actor_user_id"], name: "index_audit_logs_on_actor_user_id"
-    t.index ["auditable_type", "auditable_id"], name: "index_audit_logs_on_auditable_type_and_auditable_id"
-    t.index ["created_at"], name: "index_audit_logs_on_created_at"
-    t.index ["event_type"], name: "index_audit_logs_on_event_type"
-    t.index ["space_id", "created_at"], name: "index_audit_logs_on_space_id_and_created_at"
-    t.index ["space_id"], name: "index_audit_logs_on_space_id"
-    t.index ["subject_cpf_cnpj_fingerprint"], name: "index_audit_logs_on_subject_cpf_cnpj_fingerprint"
-    t.index ["subject_email_fingerprint"], name: "index_audit_logs_on_subject_email_fingerprint"
-    t.index ["subject_name_fingerprint"], name: "index_audit_logs_on_subject_name_fingerprint"
-    t.index ["subject_phone_fingerprint"], name: "index_audit_logs_on_subject_phone_fingerprint"
-    t.index ["subject_type", "subject_id"], name: "index_audit_logs_on_subject_type_and_subject_id"
+    t.index [ "actor_user_id", "created_at" ], name: "index_audit_logs_on_actor_user_id_and_created_at"
+    t.index [ "actor_user_id" ], name: "index_audit_logs_on_actor_user_id"
+    t.index [ "auditable_type", "auditable_id" ], name: "index_audit_logs_on_auditable_type_and_auditable_id"
+    t.index [ "created_at" ], name: "index_audit_logs_on_created_at"
+    t.index [ "event_type" ], name: "index_audit_logs_on_event_type"
+    t.index [ "space_id", "created_at" ], name: "index_audit_logs_on_space_id_and_created_at"
+    t.index [ "space_id" ], name: "index_audit_logs_on_space_id"
+    t.index [ "subject_cpf_cnpj_fingerprint" ], name: "index_audit_logs_on_subject_cpf_cnpj_fingerprint"
+    t.index [ "subject_email_fingerprint" ], name: "index_audit_logs_on_subject_email_fingerprint"
+    t.index [ "subject_name_fingerprint" ], name: "index_audit_logs_on_subject_name_fingerprint"
+    t.index [ "subject_phone_fingerprint" ], name: "index_audit_logs_on_subject_phone_fingerprint"
+    t.index [ "subject_type", "subject_id" ], name: "index_audit_logs_on_subject_type_and_subject_id"
   end
 
   create_table "availability_schedules", force: :cascade do |t|
@@ -175,7 +175,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "schedulable_type", null: false
     t.string "timezone"
     t.datetime "updated_at", null: false
-    t.index ["schedulable_type", "schedulable_id"], name: "index_availability_schedules_on_schedulable"
+    t.index [ "schedulable_type", "schedulable_id" ], name: "index_availability_schedules_on_schedulable"
   end
 
   create_table "availability_windows", force: :cascade do |t|
@@ -185,8 +185,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.time "opens_at", null: false
     t.datetime "updated_at", null: false
     t.integer "weekday", null: false
-    t.index ["availability_schedule_id", "weekday"], name: "index_availability_windows_on_schedule_weekday"
-    t.index ["availability_schedule_id"], name: "index_availability_windows_on_availability_schedule_id"
+    t.index [ "availability_schedule_id", "weekday" ], name: "index_availability_windows_on_schedule_weekday"
+    t.index [ "availability_schedule_id" ], name: "index_availability_windows_on_availability_schedule_id"
   end
 
   create_table "backup_settings", force: :cascade do |t|
@@ -212,10 +212,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.integer "discount_amount_cents", null: false
     t.bigint "payment_id"
     t.datetime "updated_at", null: false
-    t.index ["asaas_payment_id"], name: "index_billing_coupon_redemption_cycles_on_asaas_payment_id"
-    t.index ["coupon_redemption_id", "asaas_payment_id"], name: "idx_coupon_redemption_cycles_unique_payment", unique: true
-    t.index ["coupon_redemption_id"], name: "index_billing_coupon_redemption_cycles_on_coupon_redemption_id"
-    t.index ["payment_id"], name: "index_billing_coupon_redemption_cycles_on_payment_id"
+    t.index [ "asaas_payment_id" ], name: "index_billing_coupon_redemption_cycles_on_asaas_payment_id"
+    t.index [ "coupon_redemption_id", "asaas_payment_id" ], name: "idx_coupon_redemption_cycles_unique_payment", unique: true
+    t.index [ "coupon_redemption_id" ], name: "index_billing_coupon_redemption_cycles_on_coupon_redemption_id"
+    t.index [ "payment_id" ], name: "index_billing_coupon_redemption_cycles_on_payment_id"
     t.check_constraint "cycle_number > 0 AND base_amount_cents > 0 AND discount_amount_cents >= 0 AND charged_amount_cents > 0", name: "chk_coupon_redemption_cycles_amounts_positive"
   end
 
@@ -240,15 +240,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.bigint "subscription_id", null: false
     t.text "sync_error"
     t.datetime "updated_at", null: false
-    t.index ["actor_id"], name: "index_billing_coupon_redemptions_on_actor_id"
-    t.index ["billing_product_id"], name: "index_billing_coupon_redemptions_on_billing_product_id"
-    t.index ["coupon_id", "status"], name: "index_billing_coupon_redemptions_on_coupon_id_and_status"
-    t.index ["coupon_id"], name: "index_billing_coupon_redemptions_on_coupon_id"
-    t.index ["space_id", "coupon_id"], name: "index_billing_coupon_redemptions_on_space_id_and_coupon_id"
-    t.index ["space_id"], name: "index_billing_coupon_redemptions_on_space_id"
-    t.index ["subscription_id", "status"], name: "index_billing_coupon_redemptions_on_subscription_id_and_status"
-    t.index ["subscription_id"], name: "idx_coupon_redemptions_one_current_per_subscription", unique: true, where: "(status = ANY (ARRAY[0, 1, 2]))"
-    t.index ["subscription_id"], name: "index_billing_coupon_redemptions_on_subscription_id"
+    t.index [ "actor_id" ], name: "index_billing_coupon_redemptions_on_actor_id"
+    t.index [ "billing_product_id" ], name: "index_billing_coupon_redemptions_on_billing_product_id"
+    t.index [ "coupon_id", "status" ], name: "index_billing_coupon_redemptions_on_coupon_id_and_status"
+    t.index [ "coupon_id" ], name: "index_billing_coupon_redemptions_on_coupon_id"
+    t.index [ "space_id", "coupon_id" ], name: "index_billing_coupon_redemptions_on_space_id_and_coupon_id"
+    t.index [ "space_id" ], name: "index_billing_coupon_redemptions_on_space_id"
+    t.index [ "subscription_id", "status" ], name: "index_billing_coupon_redemptions_on_subscription_id_and_status"
+    t.index [ "subscription_id" ], name: "idx_coupon_redemptions_one_current_per_subscription", unique: true, where: "(status = ANY (ARRAY[0, 1, 2]))"
+    t.index [ "subscription_id" ], name: "index_billing_coupon_redemptions_on_subscription_id"
     t.check_constraint "cycles_consumed >= 0", name: "chk_coupon_redemptions_cycles_non_negative"
     t.check_constraint "duration <> 0 OR duration_months > 0", name: "chk_coupon_redemptions_duration_months_positive"
   end
@@ -272,12 +272,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.datetime "starts_at"
     t.datetime "updated_at", null: false
     t.bigint "updated_by_id"
-    t.index ["active", "public"], name: "index_billing_coupons_on_active_and_public"
-    t.index ["billing_product_id", "code"], name: "index_billing_coupons_on_billing_product_id_and_code", unique: true
-    t.index ["billing_product_id"], name: "index_billing_coupons_on_billing_product_id"
-    t.index ["created_by_id"], name: "index_billing_coupons_on_created_by_id"
-    t.index ["expires_at"], name: "index_billing_coupons_on_expires_at"
-    t.index ["updated_by_id"], name: "index_billing_coupons_on_updated_by_id"
+    t.index [ "active", "public" ], name: "index_billing_coupons_on_active_and_public"
+    t.index [ "billing_product_id", "code" ], name: "index_billing_coupons_on_billing_product_id_and_code", unique: true
+    t.index [ "billing_product_id" ], name: "index_billing_coupons_on_billing_product_id"
+    t.index [ "created_by_id" ], name: "index_billing_coupons_on_created_by_id"
+    t.index [ "expires_at" ], name: "index_billing_coupons_on_expires_at"
+    t.index [ "updated_by_id" ], name: "index_billing_coupons_on_updated_by_id"
     t.check_constraint "discount_type = 0 AND percent_off >= 1 AND percent_off <= 100 AND amount_off_cents IS NULL OR discount_type = 1 AND amount_off_cents > 0 AND percent_off IS NULL", name: "chk_billing_coupons_discount_value"
     t.check_constraint "duration <> 0 OR duration_months > 0", name: "chk_billing_coupons_duration_months_positive"
     t.check_constraint "max_redemptions IS NULL OR max_redemptions > 0", name: "chk_billing_coupons_max_redemptions_positive"
@@ -295,11 +295,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "source", null: false
     t.bigint "space_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["actor_id"], name: "index_billing_credit_transactions_on_actor_id"
-    t.index ["idempotency_key"], name: "index_billing_credit_transactions_on_idempotency_key", unique: true
-    t.index ["meter"], name: "index_billing_credit_transactions_on_meter"
-    t.index ["space_id", "meter"], name: "index_billing_credit_transactions_on_space_id_and_meter"
-    t.index ["space_id"], name: "index_billing_credit_transactions_on_space_id"
+    t.index [ "actor_id" ], name: "index_billing_credit_transactions_on_actor_id"
+    t.index [ "idempotency_key" ], name: "index_billing_credit_transactions_on_idempotency_key", unique: true
+    t.index [ "meter" ], name: "index_billing_credit_transactions_on_meter"
+    t.index [ "space_id", "meter" ], name: "index_billing_credit_transactions_on_space_id_and_meter"
+    t.index [ "space_id" ], name: "index_billing_credit_transactions_on_space_id"
   end
 
   create_table "billing_events", force: :cascade do |t|
@@ -310,10 +310,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.bigint "space_id", null: false
     t.bigint "subscription_id"
     t.index "((metadata ->> 'asaas_payment_id'::text))", name: "idx_billing_events_metadata_asaas_payment_id", where: "((metadata ->> 'asaas_payment_id'::text) IS NOT NULL)"
-    t.index ["event_type"], name: "index_billing_events_on_event_type"
-    t.index ["space_id", "created_at"], name: "index_billing_events_on_space_id_and_created_at"
-    t.index ["space_id"], name: "index_billing_events_on_space_id"
-    t.index ["subscription_id"], name: "index_billing_events_on_subscription_id"
+    t.index [ "event_type" ], name: "index_billing_events_on_event_type"
+    t.index [ "space_id", "created_at" ], name: "index_billing_events_on_space_id_and_created_at"
+    t.index [ "space_id" ], name: "index_billing_events_on_space_id"
+    t.index [ "subscription_id" ], name: "index_billing_events_on_subscription_id"
   end
 
   create_table "billing_plans", force: :cascade do |t|
@@ -335,10 +335,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.boolean "trial_default", default: false, null: false
     t.datetime "updated_at", null: false
     t.integer "whatsapp_monthly_quota"
-    t.index ["billing_product_id", "slug"], name: "index_billing_plans_on_product_and_slug", unique: true
-    t.index ["billing_product_id", "trial_default"], name: "index_billing_plans_on_product_and_trial_default", unique: true, where: "(trial_default = true)"
-    t.index ["billing_product_id"], name: "index_billing_plans_on_billing_product_id"
-    t.index ["position"], name: "index_billing_plans_on_position"
+    t.index [ "billing_product_id", "slug" ], name: "index_billing_plans_on_product_and_slug", unique: true
+    t.index [ "billing_product_id", "trial_default" ], name: "index_billing_plans_on_product_and_trial_default", unique: true, where: "(trial_default = true)"
+    t.index [ "billing_product_id" ], name: "index_billing_plans_on_billing_product_id"
+    t.index [ "position" ], name: "index_billing_plans_on_position"
   end
 
   create_table "billing_products", force: :cascade do |t|
@@ -349,7 +349,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "name", null: false
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
-    t.index ["key"], name: "index_billing_products_on_key", unique: true
+    t.index [ "key" ], name: "index_billing_products_on_key", unique: true
   end
 
   create_table "bookable_resources", force: :cascade do |t|
@@ -364,11 +364,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.bigint "space_id", null: false
     t.bigint "space_membership_id"
     t.datetime "updated_at", null: false
-    t.index ["space_id", "active"], name: "index_bookable_resources_on_space_id_and_active"
-    t.index ["space_id", "space_membership_id"], name: "index_bookable_resources_on_space_id_and_space_membership_id"
-    t.index ["space_id"], name: "index_bookable_resources_on_space_id"
-    t.index ["space_id"], name: "index_bookable_resources_one_default_per_space", unique: true, where: "(default_resource = true)"
-    t.index ["space_membership_id"], name: "index_bookable_resources_on_space_membership_id"
+    t.index [ "space_id", "active" ], name: "index_bookable_resources_on_space_id_and_active"
+    t.index [ "space_id", "space_membership_id" ], name: "index_bookable_resources_on_space_id_and_space_membership_id"
+    t.index [ "space_id" ], name: "index_bookable_resources_on_space_id"
+    t.index [ "space_id" ], name: "index_bookable_resources_one_default_per_space", unique: true, where: "(default_resource = true)"
+    t.index [ "space_membership_id" ], name: "index_bookable_resources_on_space_membership_id"
   end
 
   create_table "conversation_messages", force: :cascade do |t|
@@ -383,10 +383,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.bigint "sent_by_id"
     t.integer "status", default: 0
     t.datetime "updated_at", null: false
-    t.index ["conversation_id", "created_at"], name: "index_conversation_messages_on_conversation_id_and_created_at"
-    t.index ["conversation_id"], name: "index_conversation_messages_on_conversation_id"
-    t.index ["external_message_id"], name: "index_conversation_messages_on_external_message_id", unique: true, where: "(external_message_id IS NOT NULL)"
-    t.index ["sent_by_id"], name: "index_conversation_messages_on_sent_by_id"
+    t.index [ "conversation_id", "created_at" ], name: "index_conversation_messages_on_conversation_id_and_created_at"
+    t.index [ "conversation_id" ], name: "index_conversation_messages_on_conversation_id"
+    t.index [ "external_message_id" ], name: "index_conversation_messages_on_external_message_id", unique: true, where: "(external_message_id IS NOT NULL)"
+    t.index [ "sent_by_id" ], name: "index_conversation_messages_on_sent_by_id"
   end
 
   create_table "conversations", force: :cascade do |t|
@@ -411,16 +411,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "subject"
     t.boolean "unread", default: false, null: false
     t.datetime "updated_at", null: false
-    t.index ["assigned_to_id"], name: "index_conversations_on_assigned_to_id"
-    t.index ["customer_id"], name: "index_conversations_on_customer_id"
-    t.index ["space_id", "assigned_to_id"], name: "index_conversations_on_space_id_and_assigned_to_id", where: "(assigned_to_id IS NOT NULL)"
-    t.index ["space_id", "channel", "external_id"], name: "index_conversations_on_space_id_and_channel_and_external_id", unique: true
-    t.index ["space_id", "channel"], name: "index_conversations_on_space_id_and_channel"
-    t.index ["space_id", "customer_id"], name: "index_conversations_on_space_id_and_customer_id"
-    t.index ["space_id", "sla_breached"], name: "index_conversations_on_space_id_and_sla_breached", where: "(sla_breached = true)"
-    t.index ["space_id", "status", "last_message_at"], name: "index_conversations_on_space_id_and_status_and_last_message_at"
-    t.index ["space_id", "unread"], name: "index_conversations_on_space_id_and_unread", where: "((unread = true) AND (status = ANY (ARRAY[1, 2, 3])))"
-    t.index ["space_id"], name: "index_conversations_on_space_id"
+    t.index [ "assigned_to_id" ], name: "index_conversations_on_assigned_to_id"
+    t.index [ "customer_id" ], name: "index_conversations_on_customer_id"
+    t.index [ "space_id", "assigned_to_id" ], name: "index_conversations_on_space_id_and_assigned_to_id", where: "(assigned_to_id IS NOT NULL)"
+    t.index [ "space_id", "channel", "external_id" ], name: "index_conversations_on_space_id_and_channel_and_external_id", unique: true
+    t.index [ "space_id", "channel" ], name: "index_conversations_on_space_id_and_channel"
+    t.index [ "space_id", "customer_id" ], name: "index_conversations_on_space_id_and_customer_id"
+    t.index [ "space_id", "sla_breached" ], name: "index_conversations_on_space_id_and_sla_breached", where: "(sla_breached = true)"
+    t.index [ "space_id", "status", "last_message_at" ], name: "index_conversations_on_space_id_and_status_and_last_message_at"
+    t.index [ "space_id", "unread" ], name: "index_conversations_on_space_id_and_unread", where: "((unread = true) AND (status = ANY (ARRAY[1, 2, 3])))"
+    t.index [ "space_id" ], name: "index_conversations_on_space_id"
   end
 
   create_table "credit_bundles", force: :cascade do |t|
@@ -431,7 +431,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.integer "position", default: 0, null: false
     t.integer "price_cents", null: false
     t.datetime "updated_at", null: false
-    t.index ["position"], name: "index_credit_bundles_on_position"
+    t.index [ "position" ], name: "index_credit_bundles_on_position"
   end
 
   create_table "credit_purchases", force: :cascade do |t|
@@ -448,10 +448,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.bigint "space_id", null: false
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
-    t.index ["asaas_payment_id"], name: "index_credit_purchases_on_asaas_payment_id", unique: true, where: "(asaas_payment_id IS NOT NULL)"
-    t.index ["credit_bundle_id"], name: "index_credit_purchases_on_credit_bundle_id"
-    t.index ["space_id", "status"], name: "index_credit_purchases_on_space_id_and_status"
-    t.index ["space_id"], name: "index_credit_purchases_on_space_id"
+    t.index [ "asaas_payment_id" ], name: "index_credit_purchases_on_asaas_payment_id", unique: true, where: "(asaas_payment_id IS NOT NULL)"
+    t.index [ "credit_bundle_id" ], name: "index_credit_purchases_on_credit_bundle_id"
+    t.index [ "space_id", "status" ], name: "index_credit_purchases_on_space_id_and_status"
+    t.index [ "space_id" ], name: "index_credit_purchases_on_space_id"
   end
 
   create_table "crm_public_profiles", force: :cascade do |t|
@@ -468,8 +468,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "slug"
     t.bigint "space_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["slug"], name: "index_crm_public_profiles_on_slug", unique: true, where: "(slug IS NOT NULL)"
-    t.index ["space_id"], name: "index_crm_public_profiles_on_space_id", unique: true
+    t.index [ "slug" ], name: "index_crm_public_profiles_on_slug", unique: true, where: "(slug IS NOT NULL)"
+    t.index [ "space_id" ], name: "index_crm_public_profiles_on_space_id", unique: true
   end
 
   create_table "customers", force: :cascade do |t|
@@ -487,8 +487,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.datetime "whatsapp_opted_in_at"
     t.datetime "whatsapp_opted_out_at"
     t.index "space_id, lower((email)::text)", name: "index_customers_on_space_id_lower_email", where: "(email IS NOT NULL)"
-    t.index ["space_id"], name: "index_customers_on_space_id"
-    t.index ["user_id"], name: "index_customers_on_user_id"
+    t.index [ "space_id" ], name: "index_customers_on_space_id"
+    t.index [ "user_id" ], name: "index_customers_on_user_id"
   end
 
   create_table "demo_scheduling_appointments", force: :cascade do |t|
@@ -498,7 +498,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "status", default: "pending", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
-    t.index ["space_id"], name: "index_demo_scheduling_appointments_on_space_id"
+    t.index [ "space_id" ], name: "index_demo_scheduling_appointments_on_space_id"
   end
 
   create_table "message_credits", force: :cascade do |t|
@@ -508,8 +508,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.datetime "quota_refreshed_at"
     t.bigint "space_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["space_id"], name: "index_message_credits_on_space_id"
-    t.index ["space_id"], name: "index_message_credits_on_space_id_unique", unique: true
+    t.index [ "space_id" ], name: "index_message_credits_on_space_id"
+    t.index [ "space_id" ], name: "index_message_credits_on_space_id_unique", unique: true
   end
 
   create_table "messages", force: :cascade do |t|
@@ -522,11 +522,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.bigint "sender_id", null: false
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
-    t.index ["messageable_type", "messageable_id"], name: "index_messages_on_messageable"
-    t.index ["recipient_id", "created_at"], name: "index_messages_on_recipient_id_created_at"
-    t.index ["recipient_id"], name: "index_messages_on_recipient_id"
-    t.index ["sender_id", "created_at"], name: "index_messages_on_sender_id_created_at"
-    t.index ["sender_id"], name: "index_messages_on_sender_id"
+    t.index [ "messageable_type", "messageable_id" ], name: "index_messages_on_messageable"
+    t.index [ "recipient_id", "created_at" ], name: "index_messages_on_recipient_id_created_at"
+    t.index [ "recipient_id" ], name: "index_messages_on_recipient_id"
+    t.index [ "sender_id", "created_at" ], name: "index_messages_on_sender_id_created_at"
+    t.index [ "sender_id" ], name: "index_messages_on_sender_id"
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -538,9 +538,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "title"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["event_type"], name: "index_notifications_on_event_type"
-    t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable"
-    t.index ["user_id"], name: "index_notifications_on_user_id"
+    t.index [ "event_type" ], name: "index_notifications_on_event_type"
+    t.index [ "notifiable_type", "notifiable_id" ], name: "index_notifications_on_notifiable"
+    t.index [ "user_id" ], name: "index_notifications_on_user_id"
   end
 
   create_table "pave_audit_events", force: :cascade do |t|
@@ -559,11 +559,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "target_label"
     t.string "target_type"
     t.datetime "updated_at", null: false
-    t.index ["actor_type", "actor_id", "occurred_at"], name: "idx_on_actor_type_actor_id_occurred_at_de079bcc5d"
-    t.index ["idempotency_key"], name: "index_pave_audit_events_on_idempotency_key", unique: true, where: "(idempotency_key IS NOT NULL)"
-    t.index ["key", "occurred_at"], name: "index_pave_audit_events_on_key_and_occurred_at"
-    t.index ["space_id", "occurred_at"], name: "index_pave_audit_events_on_space_id_and_occurred_at"
-    t.index ["target_type", "target_id", "occurred_at"], name: "idx_on_target_type_target_id_occurred_at_6ba21dd835"
+    t.index [ "actor_type", "actor_id", "occurred_at" ], name: "idx_on_actor_type_actor_id_occurred_at_de079bcc5d"
+    t.index [ "idempotency_key" ], name: "index_pave_audit_events_on_idempotency_key", unique: true, where: "(idempotency_key IS NOT NULL)"
+    t.index [ "key", "occurred_at" ], name: "index_pave_audit_events_on_key_and_occurred_at"
+    t.index [ "space_id", "occurred_at" ], name: "index_pave_audit_events_on_space_id_and_occurred_at"
+    t.index [ "target_type", "target_id", "occurred_at" ], name: "idx_on_target_type_target_id_occurred_at_6ba21dd835"
   end
 
   create_table "pave_settings", force: :cascade do |t|
@@ -574,8 +574,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.bigint "updated_by_id"
     t.text "value"
     t.string "value_type", default: "string", null: false
-    t.index ["namespace", "key"], name: "index_pave_settings_on_namespace_and_key", unique: true
-    t.index ["updated_by_id"], name: "index_pave_settings_on_updated_by_id"
+    t.index [ "namespace", "key" ], name: "index_pave_settings_on_namespace_and_key", unique: true
+    t.index [ "updated_by_id" ], name: "index_pave_settings_on_updated_by_id"
   end
 
   create_table "payments", force: :cascade do |t|
@@ -591,11 +591,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.integer "status", default: 0, null: false
     t.bigint "subscription_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["asaas_payment_id"], name: "index_payments_on_asaas_payment_id", unique: true
-    t.index ["space_id"], name: "index_payments_on_space_id"
-    t.index ["status", "payment_method", "due_date"], name: "index_payments_on_status_method_due_date"
-    t.index ["subscription_id", "created_at"], name: "index_payments_on_subscription_id_and_created_at"
-    t.index ["subscription_id"], name: "index_payments_on_subscription_id"
+    t.index [ "asaas_payment_id" ], name: "index_payments_on_asaas_payment_id", unique: true
+    t.index [ "space_id" ], name: "index_payments_on_space_id"
+    t.index [ "status", "payment_method", "due_date" ], name: "index_payments_on_status_method_due_date"
+    t.index [ "subscription_id", "created_at" ], name: "index_payments_on_subscription_id_and_created_at"
+    t.index [ "subscription_id" ], name: "index_payments_on_subscription_id"
   end
 
   create_table "personalized_scheduling_links", force: :cascade do |t|
@@ -603,8 +603,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "slug", null: false
     t.bigint "space_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["slug"], name: "index_personalized_scheduling_links_on_slug", unique: true
-    t.index ["space_id"], name: "index_personalized_scheduling_links_on_space_id"
+    t.index [ "slug" ], name: "index_personalized_scheduling_links_on_slug", unique: true
+    t.index [ "space_id" ], name: "index_personalized_scheduling_links_on_space_id"
   end
 
   create_table "platform_meta_template_library_refreshes", force: :cascade do |t|
@@ -618,7 +618,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.datetime "started_at", null: false
     t.string "status", null: false
     t.datetime "updated_at", null: false
-    t.index ["locale", "status", "finished_at"], name: "idx_platform_meta_template_refresh_status"
+    t.index [ "locale", "status", "finished_at" ], name: "idx_platform_meta_template_refresh_status"
   end
 
   create_table "push_subscriptions", force: :cascade do |t|
@@ -635,9 +635,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.datetime "updated_at", null: false
     t.string "user_agent"
     t.bigint "user_id", null: false
-    t.index ["endpoint_sha256"], name: "index_push_subscriptions_on_endpoint_sha256", unique: true
-    t.index ["user_id", "active"], name: "index_push_subscriptions_on_user_id_and_active"
-    t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
+    t.index [ "endpoint_sha256" ], name: "index_push_subscriptions_on_endpoint_sha256", unique: true
+    t.index [ "user_id", "active" ], name: "index_push_subscriptions_on_user_id_and_active"
+    t.index [ "user_id" ], name: "index_push_subscriptions_on_user_id"
   end
 
   create_table "registration_settings", force: :cascade do |t|
@@ -645,7 +645,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.boolean "enabled", default: true, null: false
     t.integer "singleton_guard", default: 0, null: false
     t.datetime "updated_at", null: false
-    t.index ["singleton_guard"], name: "index_registration_settings_on_singleton_guard", unique: true
+    t.index [ "singleton_guard" ], name: "index_registration_settings_on_singleton_guard", unique: true
   end
 
   create_table "scheduling_links", force: :cascade do |t|
@@ -657,8 +657,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "token", null: false
     t.datetime "updated_at", null: false
     t.datetime "used_at"
-    t.index ["space_id"], name: "index_scheduling_links_on_space_id"
-    t.index ["token"], name: "index_scheduling_links_on_token", unique: true
+    t.index [ "space_id" ], name: "index_scheduling_links_on_space_id"
+    t.index [ "token" ], name: "index_scheduling_links_on_token", unique: true
   end
 
   create_table "space_memberships", force: :cascade do |t|
@@ -666,9 +666,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.bigint "space_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["space_id"], name: "index_space_memberships_on_space_id"
-    t.index ["user_id", "space_id"], name: "index_space_memberships_on_user_id_and_space_id", unique: true
-    t.index ["user_id"], name: "index_space_memberships_on_user_id"
+    t.index [ "space_id" ], name: "index_space_memberships_on_space_id"
+    t.index [ "user_id", "space_id" ], name: "index_space_memberships_on_user_id_and_space_id", unique: true
+    t.index [ "user_id" ], name: "index_space_memberships_on_user_id"
   end
 
   create_table "spaces", force: :cascade do |t|
@@ -680,7 +680,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "business_type"
     t.integer "cancellation_min_hours_before"
     t.datetime "completed_onboarding_at"
-    t.integer "confirmation_lead_hours", default: [24, 2], null: false, array: true
+    t.integer "confirmation_lead_hours", default: [ 24, 2 ], null: false, array: true
     t.time "confirmation_quiet_hours_end"
     t.time "confirmation_quiet_hours_start"
     t.datetime "created_at", null: false
@@ -701,10 +701,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.integer "slot_duration_minutes", default: 30, null: false
     t.string "timezone"
     t.datetime "updated_at", null: false
-    t.index ["appointment_automation_enabled"], name: "index_spaces_on_appointment_automation_enabled", where: "(appointment_automation_enabled = true)"
-    t.index ["created_at"], name: "index_spaces_on_created_at"
-    t.index ["default_inbox_assignee_id"], name: "index_spaces_on_default_inbox_assignee_id"
-    t.index ["owner_id"], name: "index_spaces_on_owner_id"
+    t.index [ "appointment_automation_enabled" ], name: "index_spaces_on_appointment_automation_enabled", where: "(appointment_automation_enabled = true)"
+    t.index [ "created_at" ], name: "index_spaces_on_created_at"
+    t.index [ "default_inbox_assignee_id" ], name: "index_spaces_on_default_inbox_assignee_id"
+    t.index [ "owner_id" ], name: "index_spaces_on_owner_id"
   end
 
   create_table "stored_files", force: :cascade do |t|
@@ -721,11 +721,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "storage_adapter", null: false
     t.string "storage_path", null: false
     t.datetime "updated_at", null: false
-    t.index ["attachable_type", "attachable_id", "scope"], name: "idx_on_attachable_type_attachable_id_scope_5b12b85fa5", unique: true
-    t.index ["attachable_type", "attachable_id"], name: "index_stored_files_on_attachable"
-    t.index ["scope"], name: "index_stored_files_on_scope"
-    t.index ["space_id", "scope"], name: "index_stored_files_on_space_id_and_scope"
-    t.index ["space_id"], name: "index_stored_files_on_space_id"
+    t.index [ "attachable_type", "attachable_id", "scope" ], name: "idx_on_attachable_type_attachable_id_scope_5b12b85fa5", unique: true
+    t.index [ "attachable_type", "attachable_id" ], name: "index_stored_files_on_attachable"
+    t.index [ "scope" ], name: "index_stored_files_on_scope"
+    t.index [ "space_id", "scope" ], name: "index_stored_files_on_space_id_and_scope"
+    t.index [ "space_id" ], name: "index_stored_files_on_space_id"
   end
 
   create_table "subscriptions", force: :cascade do |t|
@@ -746,14 +746,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.integer "status", default: 0, null: false
     t.datetime "trial_ends_at"
     t.datetime "updated_at", null: false
-    t.index ["asaas_subscription_id"], name: "index_subscriptions_on_asaas_subscription_id", unique: true, where: "(asaas_subscription_id IS NOT NULL)"
-    t.index ["billing_plan_id"], name: "index_subscriptions_on_billing_plan_id"
-    t.index ["billing_product_id"], name: "index_subscriptions_on_billing_product_id"
-    t.index ["funding_source"], name: "index_subscriptions_on_funding_source"
-    t.index ["pending_billing_plan_id"], name: "index_subscriptions_on_pending_billing_plan_id"
-    t.index ["space_id", "billing_product_id"], name: "index_subscriptions_on_space_product_active", unique: true, where: "(status <> 4)"
-    t.index ["space_id"], name: "index_subscriptions_on_space_id"
-    t.index ["status", "trial_ends_at"], name: "index_subscriptions_on_status_and_trial_ends_at"
+    t.index [ "asaas_subscription_id" ], name: "index_subscriptions_on_asaas_subscription_id", unique: true, where: "(asaas_subscription_id IS NOT NULL)"
+    t.index [ "billing_plan_id" ], name: "index_subscriptions_on_billing_plan_id"
+    t.index [ "billing_product_id" ], name: "index_subscriptions_on_billing_product_id"
+    t.index [ "funding_source" ], name: "index_subscriptions_on_funding_source"
+    t.index [ "pending_billing_plan_id" ], name: "index_subscriptions_on_pending_billing_plan_id"
+    t.index [ "space_id", "billing_product_id" ], name: "index_subscriptions_on_space_product_active", unique: true, where: "(status <> 4)"
+    t.index [ "space_id" ], name: "index_subscriptions_on_space_id"
+    t.index [ "status", "trial_ends_at" ], name: "index_subscriptions_on_status_and_trial_ends_at"
     t.check_constraint "funding_source <> 1 OR asaas_customer_id IS NULL AND asaas_subscription_id IS NULL AND payment_method IS NULL", name: "chk_subscriptions_platform_demo_unwired"
     t.check_constraint "platform_monthly_message_quota IS NULL OR platform_monthly_message_quota >= 0", name: "chk_subscriptions_platform_monthly_quota_non_negative"
   end
@@ -768,9 +768,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "uid", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["provider", "uid"], name: "index_user_identities_on_provider_and_uid", unique: true
-    t.index ["user_id", "provider"], name: "index_user_identities_on_user_id_and_provider", unique: true
-    t.index ["user_id"], name: "index_user_identities_on_user_id"
+    t.index [ "provider", "uid" ], name: "index_user_identities_on_provider_and_uid", unique: true
+    t.index [ "user_id", "provider" ], name: "index_user_identities_on_user_id_and_provider", unique: true
+    t.index [ "user_id" ], name: "index_user_identities_on_user_id"
   end
 
   create_table "user_passkeys", force: :cascade do |t|
@@ -782,12 +782,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.datetime "last_used_at"
     t.boolean "platform_authenticator", default: false, null: false
     t.text "public_key", null: false
+    t.string "rp_id", null: false
     t.bigint "sign_count", default: 0, null: false
     t.jsonb "transports", default: [], null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["external_id"], name: "index_user_passkeys_on_external_id", unique: true
-    t.index ["user_id"], name: "index_user_passkeys_on_user_id"
+    t.index [ "external_id" ], name: "index_user_passkeys_on_external_id", unique: true
+    t.index [ "user_id", "rp_id" ], name: "index_user_passkeys_on_user_id_and_rp_id"
+    t.index [ "user_id" ], name: "index_user_passkeys_on_user_id"
   end
 
   create_table "user_permissions", force: :cascade do |t|
@@ -795,8 +797,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "permission", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["user_id", "permission"], name: "index_user_permissions_on_user_id_and_permission", unique: true
-    t.index ["user_id"], name: "index_user_permissions_on_user_id"
+    t.index [ "user_id", "permission" ], name: "index_user_permissions_on_user_id_and_permission", unique: true
+    t.index [ "user_id" ], name: "index_user_permissions_on_user_id"
   end
 
   create_table "user_preferences", force: :cascade do |t|
@@ -810,7 +812,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "push_notifications_permission", default: "default", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["user_id"], name: "index_user_preferences_on_user_id", unique: true
+    t.index [ "user_id" ], name: "index_user_preferences_on_user_id", unique: true
   end
 
   create_table "user_recovery_codes", force: :cascade do |t|
@@ -819,8 +821,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.datetime "updated_at", null: false
     t.datetime "used_at"
     t.bigint "user_id", null: false
-    t.index ["user_id", "used_at"], name: "index_user_recovery_codes_on_user_id_and_used_at"
-    t.index ["user_id"], name: "index_user_recovery_codes_on_user_id"
+    t.index [ "user_id", "used_at" ], name: "index_user_recovery_codes_on_user_id_and_used_at"
+    t.index [ "user_id" ], name: "index_user_recovery_codes_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -851,11 +853,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "unconfirmed_email"
     t.datetime "updated_at", null: false
     t.string "webauthn_id"
-    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["phone_number"], name: "index_users_on_phone_number", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-    t.index ["webauthn_id"], name: "index_users_on_webauthn_id", unique: true
+    t.index [ "confirmation_token" ], name: "index_users_on_confirmation_token", unique: true
+    t.index [ "email" ], name: "index_users_on_email", unique: true
+    t.index [ "phone_number" ], name: "index_users_on_phone_number", unique: true
+    t.index [ "reset_password_token" ], name: "index_users_on_reset_password_token", unique: true
+    t.index [ "webauthn_id" ], name: "index_users_on_webauthn_id", unique: true
   end
 
   create_table "whatsapp_contact_identities", force: :cascade do |t|
@@ -875,14 +877,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "wa_id"
     t.string "waba_id", null: false
     t.bigint "whatsapp_phone_number_id", null: false
-    t.index ["customer_id"], name: "index_whatsapp_contact_identities_on_customer_id"
-    t.index ["space_id", "customer_id"], name: "index_whatsapp_contact_identities_on_space_id_and_customer_id"
-    t.index ["space_id", "phone"], name: "idx_whatsapp_contact_identities_on_space_phone", where: "(phone IS NOT NULL)"
-    t.index ["space_id", "whatsapp_phone_number_id", "parent_user_id"], name: "idx_whatsapp_contact_identities_on_scoped_parent_user_id", unique: true, where: "(parent_user_id IS NOT NULL)"
-    t.index ["space_id", "whatsapp_phone_number_id", "user_id"], name: "idx_whatsapp_contact_identities_on_scoped_user_id", unique: true, where: "(user_id IS NOT NULL)"
-    t.index ["space_id", "whatsapp_phone_number_id", "wa_id"], name: "idx_whatsapp_contact_identities_on_scoped_wa_id", unique: true, where: "(wa_id IS NOT NULL)"
-    t.index ["space_id"], name: "index_whatsapp_contact_identities_on_space_id"
-    t.index ["whatsapp_phone_number_id"], name: "index_whatsapp_contact_identities_on_whatsapp_phone_number_id"
+    t.index [ "customer_id" ], name: "index_whatsapp_contact_identities_on_customer_id"
+    t.index [ "space_id", "customer_id" ], name: "index_whatsapp_contact_identities_on_space_id_and_customer_id"
+    t.index [ "space_id", "phone" ], name: "idx_whatsapp_contact_identities_on_space_phone", where: "(phone IS NOT NULL)"
+    t.index [ "space_id", "whatsapp_phone_number_id", "parent_user_id" ], name: "idx_whatsapp_contact_identities_on_scoped_parent_user_id", unique: true, where: "(parent_user_id IS NOT NULL)"
+    t.index [ "space_id", "whatsapp_phone_number_id", "user_id" ], name: "idx_whatsapp_contact_identities_on_scoped_user_id", unique: true, where: "(user_id IS NOT NULL)"
+    t.index [ "space_id", "whatsapp_phone_number_id", "wa_id" ], name: "idx_whatsapp_contact_identities_on_scoped_wa_id", unique: true, where: "(wa_id IS NOT NULL)"
+    t.index [ "space_id" ], name: "index_whatsapp_contact_identities_on_space_id"
+    t.index [ "whatsapp_phone_number_id" ], name: "index_whatsapp_contact_identities_on_whatsapp_phone_number_id"
   end
 
   create_table "whatsapp_conversations", force: :cascade do |t|
@@ -900,12 +902,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "wa_id"
     t.bigint "whatsapp_contact_identity_id"
     t.bigint "whatsapp_phone_number_id"
-    t.index ["customer_id"], name: "index_whatsapp_conversations_on_customer_id"
-    t.index ["space_id", "wa_id"], name: "index_whatsapp_conversations_on_space_id_and_wa_id", unique: true
-    t.index ["space_id", "whatsapp_phone_number_id", "external_user_id_type", "external_user_id"], name: "idx_whatsapp_conversations_on_scoped_external_user", unique: true, where: "(external_user_id IS NOT NULL)"
-    t.index ["space_id"], name: "index_whatsapp_conversations_on_space_id"
-    t.index ["whatsapp_contact_identity_id"], name: "index_whatsapp_conversations_on_whatsapp_contact_identity_id"
-    t.index ["whatsapp_phone_number_id"], name: "index_whatsapp_conversations_on_whatsapp_phone_number_id"
+    t.index [ "customer_id" ], name: "index_whatsapp_conversations_on_customer_id"
+    t.index [ "space_id", "wa_id" ], name: "index_whatsapp_conversations_on_space_id_and_wa_id", unique: true
+    t.index [ "space_id", "whatsapp_phone_number_id", "external_user_id_type", "external_user_id" ], name: "idx_whatsapp_conversations_on_scoped_external_user", unique: true, where: "(external_user_id IS NOT NULL)"
+    t.index [ "space_id" ], name: "index_whatsapp_conversations_on_space_id"
+    t.index [ "whatsapp_contact_identity_id" ], name: "index_whatsapp_conversations_on_whatsapp_contact_identity_id"
+    t.index [ "whatsapp_phone_number_id" ], name: "index_whatsapp_conversations_on_whatsapp_phone_number_id"
   end
 
   create_table "whatsapp_messages", force: :cascade do |t|
@@ -920,10 +922,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.datetime "updated_at", null: false
     t.string "wamid"
     t.bigint "whatsapp_conversation_id", null: false
-    t.index ["appointment_reminder_id"], name: "index_whatsapp_messages_on_appointment_reminder_id"
-    t.index ["sent_by_id"], name: "index_whatsapp_messages_on_sent_by_id"
-    t.index ["wamid"], name: "index_whatsapp_messages_on_wamid", unique: true, where: "(wamid IS NOT NULL)"
-    t.index ["whatsapp_conversation_id"], name: "index_whatsapp_messages_on_whatsapp_conversation_id"
+    t.index [ "appointment_reminder_id" ], name: "index_whatsapp_messages_on_appointment_reminder_id"
+    t.index [ "sent_by_id" ], name: "index_whatsapp_messages_on_sent_by_id"
+    t.index [ "wamid" ], name: "index_whatsapp_messages_on_wamid", unique: true, where: "(wamid IS NOT NULL)"
+    t.index [ "whatsapp_conversation_id" ], name: "index_whatsapp_messages_on_whatsapp_conversation_id"
   end
 
   create_table "whatsapp_phone_numbers", force: :cascade do |t|
@@ -938,9 +940,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.datetime "updated_at", null: false
     t.string "verified_name"
     t.string "waba_id", null: false
-    t.index ["normalized_phone"], name: "index_whatsapp_phone_numbers_on_normalized_phone"
-    t.index ["phone_number_id"], name: "index_whatsapp_phone_numbers_on_phone_number_id", unique: true
-    t.index ["space_id"], name: "index_whatsapp_phone_numbers_on_space_id", unique: true, where: "(space_id IS NOT NULL)"
+    t.index [ "normalized_phone" ], name: "index_whatsapp_phone_numbers_on_normalized_phone"
+    t.index [ "phone_number_id" ], name: "index_whatsapp_phone_numbers_on_phone_number_id", unique: true
+    t.index [ "space_id" ], name: "index_whatsapp_phone_numbers_on_space_id", unique: true, where: "(space_id IS NOT NULL)"
   end
 
   create_table "whatsapp_template_blueprints", force: :cascade do |t|
@@ -958,8 +960,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.datetime "updated_at", null: false
     t.jsonb "variables", default: [], null: false
     t.string "version", null: false
-    t.index ["active"], name: "index_whatsapp_template_blueprints_on_active"
-    t.index ["name", "version", "locale"], name: "idx_whatsapp_template_blueprints_identity", unique: true
+    t.index [ "active" ], name: "index_whatsapp_template_blueprints_on_active"
+    t.index [ "name", "version", "locale" ], name: "idx_whatsapp_template_blueprints_identity", unique: true
   end
 
   create_table "whatsapp_templates", force: :cascade do |t|
@@ -993,12 +995,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_175000) do
     t.string "version", null: false
     t.string "waba_id"
     t.bigint "whatsapp_phone_number_id"
-    t.index ["space_id", "meta_status"], name: "idx_whatsapp_templates_space_status"
-    t.index ["space_id", "meta_template_name", "locale"], name: "idx_whatsapp_templates_space_meta_locale", unique: true
-    t.index ["space_id", "name", "version", "locale"], name: "idx_whatsapp_templates_space_identity", unique: true
-    t.index ["space_id", "source"], name: "idx_whatsapp_templates_space_source"
-    t.index ["space_id"], name: "index_whatsapp_templates_on_space_id"
-    t.index ["whatsapp_phone_number_id"], name: "index_whatsapp_templates_on_whatsapp_phone_number_id"
+    t.index [ "space_id", "meta_status" ], name: "idx_whatsapp_templates_space_status"
+    t.index [ "space_id", "meta_template_name", "locale" ], name: "idx_whatsapp_templates_space_meta_locale", unique: true
+    t.index [ "space_id", "name", "version", "locale" ], name: "idx_whatsapp_templates_space_identity", unique: true
+    t.index [ "space_id", "source" ], name: "idx_whatsapp_templates_space_source"
+    t.index [ "space_id" ], name: "index_whatsapp_templates_on_space_id"
+    t.index [ "whatsapp_phone_number_id" ], name: "index_whatsapp_templates_on_whatsapp_phone_number_id"
   end
 
   add_foreign_key "account_deletion_requests", "users"

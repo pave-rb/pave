@@ -35,6 +35,14 @@ module PaveCli
     @root || Pathname.new(File.expand_path("../..", __dir__))
   end
 
+  def runtime_monorepo?
+    root.join("gems", "pave-core").directory?
+  end
+
+  def host_app?
+    !runtime_monorepo? && root.join("config", "application.rb").file?
+  end
+
   def run(argv, root: nil)
     @root = Pathname.new(root) if root
     case argv.first
@@ -128,26 +136,36 @@ module PaveCli
 
     puts "Pave runtime doctor"
 
-    failures << "gems directory" unless check("gems directory") { root.join("gems").directory? }
+    if runtime_monorepo?
+      failures << "gems directory" unless check("gems directory") { root.join("gems").directory? }
 
-    PACKAGES.each do |package, require_path|
-      package_root = root.join("gems", package)
+      PACKAGES.each do |package, require_path|
+        package_root = root.join("gems", package)
 
-      failures << "#{package} package files" unless check("#{package} package files") do
-        [
-          package_root.join("#{package}.gemspec"),
-          package_root.join("lib", "#{require_path}.rb"),
-          package_root.join("lib", *require_path.split("/"), "version.rb"),
-          package_root.join("lib", *require_path.split("/"), "engine.rb"),
-          package_root.join("package.yml"),
-          package_root.join("README.md")
-        ].all?(&:exist?)
+        failures << "#{package} package files" unless check("#{package} package files") do
+          [
+            package_root.join("#{package}.gemspec"),
+            package_root.join("lib", "#{require_path}.rb"),
+            package_root.join("lib", *require_path.split("/"), "version.rb"),
+            package_root.join("lib", *require_path.split("/"), "engine.rb"),
+            package_root.join("package.yml"),
+            package_root.join("README.md")
+          ].all?(&:exist?)
+        end
+
+        failures << "#{package} require" unless check("#{package} require") { require require_path }
+      rescue StandardError, LoadError => error
+        failures << "#{package} require: #{error.class}: #{error.message}"
+        puts "FAIL #{package} require (#{error.class}: #{error.message})"
       end
-
-      failures << "#{package} require" unless check("#{package} require") { require require_path }
-    rescue StandardError, LoadError => error
-      failures << "#{package} require: #{error.class}: #{error.message}"
-      puts "FAIL #{package} require (#{error.class}: #{error.message})"
+    else
+      puts "SKIP gems directory (not a runtime monorepo)"
+      PACKAGES.each do |package, require_path|
+        failures << "#{package} require" unless check("#{package} require") { require require_path }
+      rescue StandardError, LoadError => error
+        failures << "#{package} require: #{error.class}: #{error.message}"
+        puts "FAIL #{package} require (#{error.class}: #{error.message})"
+      end
     end
 
     failures << "pave-core APIs" unless check("pave-core APIs") do
@@ -237,8 +255,14 @@ module PaveCli
 
     failures << "Packwerk availability" unless check("Packwerk availability") { gem_available?("packwerk") }
     failures << "Packwerk config" unless check("Packwerk config") { root.join("packwerk.yml").file? && root.join("package.yml").file? }
-    failures << "runtime dependency graph" unless check("runtime dependency graph") { runtime_dependency_graph_valid? }
-    failures << "runtime anti-contamination" unless check("runtime anti-contamination") { runtime_product_references.empty? }
+
+    if runtime_monorepo?
+      failures << "runtime dependency graph" unless check("runtime dependency graph") { runtime_dependency_graph_valid? }
+      failures << "runtime anti-contamination" unless check("runtime anti-contamination") { runtime_product_references.empty? }
+    elsif host_app?
+      failures << "product packages" unless check("product packages") { product_packages_valid? }
+    end
+
     failures << "Packwerk validation" unless check("Packwerk validation") { run_command("bundle", "exec", "packwerk", "validate") }
     failures << "Packwerk dependency enforcement" unless check("Packwerk dependency enforcement") { run_command("bundle", "exec", "packwerk", "check") }
 
@@ -249,6 +273,14 @@ module PaveCli
   end
 
   def generate_context
+    if host_app?
+      generate_host_app_context
+    else
+      generate_runtime_context
+    end
+  end
+
+  def generate_runtime_context
     puts <<~CONTEXT
       # Pav\u00ea Runtime Repository Context
 
@@ -280,6 +312,41 @@ module PaveCli
     0
   end
 
+  def generate_host_app_context
+    require "pave/core"
+    require root.join("config/environment").to_s
+
+    product_lines = Pave.products.map { |product| "- #{product.key}: #{product.label} (#{product.mode})" }
+
+    puts <<~CONTEXT
+      # Pav\u00ea Host App Context
+
+      Type: host_app
+      Description: Deployable Rails application that consumes the Pav\u00ea runtime.
+
+      ## Registered Products
+
+      #{product_lines.empty? ? "(no products registered)" : product_lines.join("\n")}
+
+      ## Agent Instructions
+
+      See the host app AGENTS.md and README.md for product-specific guidelines.
+
+      ## CLI Surface
+
+      bin/pave help          -- list commands
+      bin/pave version       -- print Pav\u00ea runtime version
+      bin/pave doctor        -- runtime and host app health checks
+      bin/pave context       -- this output
+      bin/pave list products -- list registered products
+      bin/pave new product <name> -- generate a new product scaffold
+    CONTEXT
+    0
+  rescue StandardError, LoadError => error
+    warn "Cannot generate host app context: #{error.class}: #{error.message}"
+    1
+  end
+
   def new_product(name)
     rails_bin = root.join("bin/rails")
     if rails_bin.exist?
@@ -292,8 +359,22 @@ module PaveCli
 
   def list_products
     require "pave/core"
-    puts "  (no products registered)"
+
+    if host_app?
+      require root.join("config/environment").to_s
+      products = Pave.products.to_a
+      if products.empty?
+        puts "  (no products registered)"
+      else
+        products.each { |product| puts "  - #{product.key}: #{product.label}" }
+      end
+    else
+      puts "  (no products registered)"
+    end
     0
+  rescue StandardError, LoadError => error
+    warn "Cannot list products: #{error.class}: #{error.message}"
+    1
   end
 
   def install_migrations
@@ -332,6 +413,9 @@ module PaveCli
     script = root.join("scripts", "repo-check-clean")
     if script.executable?
       exec script.to_s
+    elsif host_app?
+      puts "SKIP repo:check-clean (no scripts/repo-check-clean in host app)"
+      0
     else
       puts "FAIL scripts/repo-check-clean is missing or not executable."
       1
@@ -389,6 +473,16 @@ module PaveCli
     PACKAGE_DEPENDENCIES.all? do |package, dependencies|
       manifest = package_manifest(package)
       manifest["enforce_dependencies"] == true && Array(manifest["dependencies"]) == dependencies
+    end
+  end
+
+  def product_packages_valid?
+    manifests = root.join("products").glob("*/package.yml")
+    return true if manifests.empty?
+
+    manifests.all? do |path|
+      manifest = load_manifest(path)
+      manifest["enforce_dependencies"] == true && manifest["dependencies"].is_a?(Array)
     end
   end
 

@@ -5,16 +5,17 @@ module Auth
     class CompletePasskeyRegistration
       Result = Struct.new(:success?, :passkey, :recovery_codes, :error, keyword_init: true)
 
-      def self.call(user:, session:, credential:, label:)
-        new(user:, session:, credential:, label:).call
-      end
+        def self.call(user:, session:, credential:, label:, webauthn: nil)
+          new(user:, session:, credential:, label:, webauthn:).call
+        end
 
-      def initialize(user:, session:, credential:, label:)
-        @user = user
-        @session = session
-        @credential = credential
-        @label = label
-      end
+        def initialize(user:, session:, credential:, label:, webauthn: nil)
+          @user = user
+          @session = session
+          @credential = credential
+          @label = label
+          @webauthn = webauthn
+        end
 
       def call
         first_factor = !@user.mfa_enabled?
@@ -26,7 +27,8 @@ module Auth
             user: @user,
             session: @session,
             credential: @credential,
-            label: @label
+            label: @label,
+            webauthn: @webauthn
           )
 
           raise ActiveRecord::Rollback unless registration.success?

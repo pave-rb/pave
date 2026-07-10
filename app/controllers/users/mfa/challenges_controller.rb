@@ -8,6 +8,7 @@ module Users
       before_action :set_pending_challenge
 
       def show
+        @passkeys_enabled = @mfa_user.passkeys_enabled?(rp_id: current_webauthn_rp_id)
         redirect_to new_user_mfa_totp_enrollment_path if @mfa_user.mfa_setup_required?
       end
 
@@ -30,6 +31,7 @@ module Users
             return redirect_to new_user_session_path, alert: t("mfa.challenge.expired")
           end
 
+          @passkeys_enabled = @mfa_user.passkeys_enabled?(rp_id: current_webauthn_rp_id)
           flash.now[:alert] = t("mfa.challenge.errors.#{result.error}")
           return render :show, status: :unprocessable_entity
         end

@@ -1,0 +1,18 @@
+<h1 class="text-2xl font-semibold tracking-tight"><%= t("mfa.recovery_codes.title") %></h1>
+<p class="mt-1 text-sm text-slate-500"><%= t("mfa.recovery_codes.subtitle") %></p>
+
+<div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+  <%= t("mfa.recovery_codes.warning") %>
+</div>
+
+<div class="mt-6 grid gap-3 sm:grid-cols-2">
+  <% @recovery_codes.each do |code| %>
+    <div class="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 font-mono text-sm text-deep">
+      <%= code %>
+    </div>
+  <% end %>
+</div>
+
+<%= form_with(url: mfa_recovery_codes_path, local: true, class: "mt-6") do |f| %>
+  <%= f.submit t("mfa.recovery_codes.submit"), class: "w-full rounded-lg bg-deep px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-electric focus:ring-offset-2" %>
+<% end %>

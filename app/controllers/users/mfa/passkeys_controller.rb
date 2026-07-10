@@ -8,7 +8,11 @@ module Users
       before_action :set_pending_mfa_user
 
       def registration_options
-        options = Auth::Mfa::Webauthn::GenerateRegistrationOptions.call(user: @mfa_user, session: session)
+        options = Auth::Mfa::Webauthn::GenerateRegistrationOptions.call(
+          user: @mfa_user,
+          session: session,
+          webauthn: current_webauthn
+        )
         render json: options
       end
 
@@ -17,7 +21,8 @@ module Users
           user: @mfa_user,
           session: session,
           credential: credential_payload,
-          label: passkey_label
+          label: passkey_label,
+          webauthn: current_webauthn
         )
 
         unless result.success?
@@ -39,9 +44,15 @@ module Users
       end
 
       def authentication_options
-        return render json: { error: error_message_for(:passkeys_unavailable) }, status: :unprocessable_entity unless @mfa_user.passkeys_enabled?
+        unless @mfa_user.passkeys_enabled?(rp_id: current_webauthn_rp_id)
+          return render json: { error: error_message_for(:passkeys_unavailable) }, status: :unprocessable_entity
+        end
 
-        options = Auth::Mfa::Webauthn::GenerateAuthenticationOptions.call(user: @mfa_user, session: session)
+        options = Auth::Mfa::Webauthn::GenerateAuthenticationOptions.call(
+          user: @mfa_user,
+          session: session,
+          webauthn: current_webauthn
+        )
         render json: options
       end
 
@@ -49,7 +60,8 @@ module Users
         result = Auth::Mfa::Webauthn::VerifyAssertion.call(
           user: @mfa_user,
           session: session,
-          credential: credential_payload
+          credential: credential_payload,
+          webauthn: current_webauthn
         )
 
         unless result.success?

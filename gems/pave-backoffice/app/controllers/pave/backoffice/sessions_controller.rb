@@ -17,8 +17,13 @@ module Pave
 
         if admin && admin.valid_password?(params[:password])
           if admin.super_admin?
-            sign_in_backoffice_admin(admin)
-            redirect_to backoffice_return_location, notice: "Signed in to backoffice."
+            if admin.mfa_required?
+              session[:pave_backoffice_admin_mfa_user_id] = admin.id
+              redirect_to mfa_challenge_path
+            else
+              sign_in_backoffice_admin(admin)
+              redirect_to backoffice_return_location, notice: "Signed in to backoffice."
+            end
           else
             flash.now[:alert] = "This account does not have platform backoffice access."
             render :new, status: :unprocessable_entity

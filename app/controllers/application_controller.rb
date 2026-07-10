@@ -52,6 +52,14 @@ class ApplicationController < ActionController::Base
     }
   end
 
+  def current_webauthn
+    @current_webauthn ||= Pave::Identity::Webauthn.relying_party_for(request)
+  end
+
+  def current_webauthn_rp_id
+    current_webauthn.rp_id
+  end
+
   def current_tenant
     @current_tenant ||= current_user&.space
   end

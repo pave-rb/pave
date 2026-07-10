@@ -27,7 +27,7 @@ class PaveCliTest < ActiveSupport::TestCase
     stdout, stderr, status = run_pave("version")
 
     assert status.success?, stderr
-    assert_match(/\Apave \d+\.\d+\.\d+\n\z/, stdout)
+    assert_match(/\Apave \d+\.\d+\.\d+(?:\.\w+\.\d+)?\n\z/, stdout)
   end
 
   test "doctor checks runtime scaffold" do

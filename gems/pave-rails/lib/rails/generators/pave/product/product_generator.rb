@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-module Pave
-  module Rails
-    module Generators
+module Rails
+  module Generators
+    module Pave
       class ProductGenerator < ::Rails::Generators::NamedBase
+        namespace "pave:product"
         desc "Generate a Pav\u00ea product scaffold under products/<name>/"
-        source_root File.expand_path("templates/products", __dir__)
+        source_root File.expand_path("templates", __dir__)
 
         class_option :module, type: :string, default: "App", desc: "Ruby module name for the product"
-        hook_for :test_framework
 
         def create_product_directory
           empty_directory product_path
